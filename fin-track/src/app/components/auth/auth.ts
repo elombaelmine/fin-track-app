@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import { ApiService } from '../../api.service'; 
+import { finalize } from 'rxjs';
 
 @Component({
   selector: 'app-auth',
@@ -24,10 +25,15 @@ export class Auth {
 
   errorMessage: string = '';
   successMessage: string = '';
+  isSubmitting = false;
 
   constructor(private apiService: ApiService, private router: Router) {}
 
   onSubmit() {
+    if (this.isSubmitting) {
+      return;
+    }
+
     this.errorMessage = '';
     this.successMessage = '';
 
@@ -55,7 +61,11 @@ export class Auth {
       password: this.formData.password
     };
 
-    this.apiService.registerUser(payload).subscribe({
+    this.isSubmitting = true;
+
+    this.apiService.registerUser(payload).pipe(
+      finalize(() => this.isSubmitting = false)
+    ).subscribe({
       next: (response: any) => {
         this.successMessage = 'Account provisioned successfully! Switching to login terminal...';
         setTimeout(() => {
@@ -66,7 +76,7 @@ export class Auth {
         }, 2000);
       },
       error: (err) => {
-        this.errorMessage = err.error?.message || 'An error occurred during registration.';
+        this.errorMessage = this.getErrorMessage(err, 'An error occurred during registration.');
       }
     });
   }
@@ -82,7 +92,11 @@ export class Auth {
       password: this.formData.password
     };
 
-    this.apiService.loginUser(payload).subscribe({
+    this.isSubmitting = true;
+
+    this.apiService.loginUser(payload).pipe(
+      finalize(() => this.isSubmitting = false)
+    ).subscribe({
       next: (response: any) => {
         this.successMessage = 'Access granted! Loading secure dashboard...';
         
@@ -98,8 +112,40 @@ export class Auth {
         }, 1200);
       },
       error: (err) => {
-        this.errorMessage = err.error?.message || 'Invalid operational credentials or security clearance key.';
+        this.errorMessage = this.getErrorMessage(err, 'Invalid credentials.');
       }
     });
+  }
+
+  get submitButtonLabel(): string {
+    if (this.isSubmitting) {
+      return this.authMode === 'login' ? 'Signing in...' : 'Creating account...';
+    }
+
+    return this.authMode === 'login' ? 'Initialize Secure Session' : 'Provision Account Token';
+  }
+
+  private getErrorMessage(err: any, fallback: string): string {
+    if (err?.status === 401) {
+      return 'Invalid credentials. Check your username and password.';
+    }
+
+    if (err?.status === 0) {
+      return 'Cannot reach the server. Make sure the backend is running on http://localhost:3000.';
+    }
+
+    if (typeof err?.error === 'string' && err.error.trim()) {
+      return err.error;
+    }
+
+    if (err?.error?.message) {
+      return err.error.message;
+    }
+
+    if (err?.error?.error) {
+      return err.error.error;
+    }
+
+    return fallback;
   }
 }

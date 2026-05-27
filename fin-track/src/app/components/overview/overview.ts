@@ -1,5 +1,6 @@
 import { Component, OnInit, Inject, PLATFORM_ID } from '@angular/core';
 import { CommonModule, isPlatformBrowser } from '@angular/common';
+import { RouterLink } from '@angular/router';
 import { ApiService } from '../../api.service';
 
 interface Transaction {
@@ -14,7 +15,7 @@ interface Transaction {
 @Component({
   selector: 'app-overview',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, RouterLink],
   templateUrl: './overview.html',
   styleUrls: ['./overview.css']
 })
@@ -32,6 +33,8 @@ export class Overview implements OnInit {
   totalDaysInCurrentMonth: number = 30;
 
   transactions: Transaction[] = [];
+  isLoadingLedger = false;
+  ledgerError = '';
 
   constructor(
     @Inject(PLATFORM_ID) private platformId: Object,
@@ -41,7 +44,7 @@ export class Overview implements OnInit {
   ngOnInit(): void {
     if (isPlatformBrowser(this.platformId)) {
       this.loadCurrentOperator();
-      this.fetchDashboardLedger();
+      this.refreshDashboardLedger();
     }
   }
 
@@ -56,16 +59,22 @@ export class Overview implements OnInit {
     });
   }
 
-  private fetchDashboardLedger(): void {
+  refreshDashboardLedger(): void {
+    this.isLoadingLedger = true;
+    this.ledgerError = '';
+
     this.apiService.getTransactions().subscribe({
       next: (data: Transaction[]) => {
         this.transactions = data || [];
         this.runFinancialEngine();
+        this.isLoadingLedger = false;
       },
       error: (err) => {
         console.error('Ledger sync error:', err);
-        this.transactions = []; // Keep empty to trigger empty-state view
+        this.ledgerError = err?.error?.message || 'Could not load transactions right now.';
+        this.transactions = [];
         this.runFinancialEngine();
+        this.isLoadingLedger = false;
       }
     });
   }
@@ -105,6 +114,38 @@ export class Overview implements OnInit {
     return this.dailyAverage * this.totalDaysInCurrentMonth;
   }
 
+  get budgetUsedPercent(): number {
+    if (this.monthlyBudgetLimit <= 0) {
+      return 0;
+    }
+
+    return Math.min(100, Math.round((this.totalSpent / this.monthlyBudgetLimit) * 100));
+  }
+
+  get budgetStatusLabel(): string {
+    if (this.budgetUsedPercent >= 90) {
+      return 'Critical';
+    }
+
+    if (this.budgetUsedPercent >= 70) {
+      return 'Watch closely';
+    }
+
+    return 'On track';
+  }
+
+  get budgetStatusClass(): string {
+    if (this.budgetUsedPercent >= 90) {
+      return 'critical';
+    }
+
+    if (this.budgetUsedPercent >= 70) {
+      return 'warning';
+    }
+
+    return 'healthy';
+  }
+
   getCategoryCost(categoryName: string): number {
     const today = new Date();
     return this.transactions
@@ -116,5 +157,39 @@ export class Overview implements OnInit {
                txDate.getMonth() === today.getMonth();
       })
       .reduce((sum, tx) => sum + tx.amount, 0);
+  }
+
+  downloadReport(): void {
+    if (!isPlatformBrowser(this.platformId) || this.transactions.length === 0) {
+      return;
+    }
+
+    const rows = [
+      ['Description', 'Category', 'Date', 'Type', 'Amount', 'Status'],
+      ...this.transactions.map(tx => [
+        tx.description,
+        tx.category,
+        tx.date,
+        tx.type,
+        tx.amount.toString(),
+        tx.status || 'Completed'
+      ])
+    ];
+
+    const csv = rows
+      .map(row => row.map(value => this.escapeCsv(value)).join(','))
+      .join('\n');
+
+    const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = `fintrack-transactions-${new Date().toISOString().slice(0, 10)}.csv`;
+    link.click();
+    URL.revokeObjectURL(url);
+  }
+
+  private escapeCsv(value: string): string {
+    return `"${value.replace(/"/g, '""')}"`;
   }
 }

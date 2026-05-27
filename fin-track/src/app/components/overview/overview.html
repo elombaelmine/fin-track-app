@@ -17,12 +17,16 @@
     <div class="left-card">
       <div class="card-header">
         <h2>Monthly Budget</h2>
-        <h6 class="menu-dots">...</h6>
+        <span class="budget-status" [ngClass]="budgetStatusClass">{{ budgetStatusLabel }}</span>
       </div>
       <div class="progressbar-stats">
         <h4>Spent: <span>{{ totalSpent | currency:'XAF':'symbol':'1.0-0' }}</span></h4>
         <h4>Total: <span>{{ monthlyBudgetLimit | currency:'XAF':'symbol':'1.0-0' }}</span></h4>
       </div>
+      <div class="budget-progress-track" aria-label="Monthly budget usage">
+        <div class="budget-progress-fill" [ngClass]="budgetStatusClass" [style.width.%]="budgetUsedPercent"></div>
+      </div>
+      <p class="budget-percent-text">{{ budgetUsedPercent }}% of budget used this month.</p>
       <p class="budget-remaining-text">
         You have {{ (monthlyBudgetLimit - totalSpent) | currency:'XAF':'symbol':'1.0-0' }} left for the next {{ daysLeft }} days.
       </p>
@@ -49,9 +53,30 @@
   <div class="slide3">
     <div class="table-header-wrapper">
       <h1>Recent Transactions</h1>
-      <h6 class="download-btn">Download Report</h6>
+      <div class="table-actions">
+        <button type="button" class="refresh-btn" (click)="refreshDashboardLedger()" [disabled]="isLoadingLedger">
+          {{ isLoadingLedger ? 'Refreshing...' : 'Refresh' }}
+        </button>
+        <button type="button" class="download-btn" (click)="downloadReport()" [disabled]="transactions.length === 0">
+          Download Report
+        </button>
+      </div>
     </div>
-    <div class="heading-row">
+
+    <div *ngIf="ledgerError" class="overview-alert">
+      {{ ledgerError }}
+    </div>
+
+    <div *ngIf="isLoadingLedger" class="overview-state">
+      Loading transactions...
+    </div>
+
+    <div *ngIf="!isLoadingLedger && !ledgerError && transactions.length === 0" class="overview-state empty">
+      <p>No transactions recorded yet.</p>
+      <a routerLink="/add-transaction">Add your first transaction</a>
+    </div>
+
+    <div class="heading-row" *ngIf="!isLoadingLedger && transactions.length > 0">
       <h2>TRANSACTION</h2>
       <h2>CATEGORY</h2>
       <h2>DATE</h2>
@@ -59,7 +84,7 @@
       <h2>STATUS</h2>
     </div>
 
-    <div class="transaction-data-row" *ngFor="let item of transactions">
+    <div class="transaction-data-row" *ngFor="let item of (isLoadingLedger ? [] : transactions)">
       <div class="cell">{{ item.description }}</div>
       <div class="cell"><span class="cat-badge">{{ item.category }}</span></div>
       <div class="cell">{{ item.date | date:'mediumDate' }}</div>

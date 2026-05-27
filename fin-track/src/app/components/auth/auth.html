@@ -14,8 +14,8 @@
     <div class="form-wrapper">
       
       <div class="toggle-button-group">
-        <button type="button" [class.active]="authMode === 'login'" (click)="authMode = 'login'; errorMessage = ''; successMessage = ''">Sign In</button>
-        <button type="button" [class.active]="authMode === 'register'" (click)="authMode = 'register'; errorMessage = ''; successMessage = ''">Register</button>
+        <button type="button" [disabled]="isSubmitting" [class.active]="authMode === 'login'" (click)="authMode = 'login'; errorMessage = ''; successMessage = ''">Sign In</button>
+        <button type="button" [disabled]="isSubmitting" [class.active]="authMode === 'register'" (click)="authMode = 'register'; errorMessage = ''; successMessage = ''">Register</button>
       </div>
 
       <div class="form-header">
@@ -90,8 +90,9 @@
           </div>
         </div>
 
-        <button type="submit" class="btn-submit-session">
-          {{ authMode === 'login' ? 'Initialize Secure Session' : 'Provision Account Token' }}
+        <button type="submit" class="btn-submit-session" [disabled]="isSubmitting" [class.loading]="isSubmitting">
+          <span *ngIf="isSubmitting" class="loading-dot"></span>
+          {{ submitButtonLabel }}
         </button>
       </form>
 

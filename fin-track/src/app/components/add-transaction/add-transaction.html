@@ -5,21 +5,43 @@
   </header>
 
   <form class="transaction-form" (ngSubmit)="onSubmitTransaction()">
+    <div *ngIf="errorMessage" class="status-alert alert-danger">
+      {{ errorMessage }}
+    </div>
+
+    <div *ngIf="successMessage" class="status-alert alert-success">
+      {{ successMessage }}
+    </div>
+
     <div class="form-grid">
       <div class="form-group full-width">
         <label>Merchant / Description</label>
-        <input type="text" placeholder="e.g., Apple Store Online, Corporate Salary" class="form-input" />
+        <input
+          type="text"
+          name="description"
+          [(ngModel)]="transaction.description"
+          placeholder="e.g., Apple Store Online, Corporate Salary"
+          class="form-input"
+          required />
       </div>
 
       <div class="form-group">
         <label>Amount</label>
-        <input type="text" placeholder="$ 0.00" class="form-input" />
+        <input
+          type="number"
+          name="amount"
+          [(ngModel)]="transaction.amount"
+          min="1"
+          step="1"
+          placeholder="0"
+          class="form-input"
+          required />
       </div>
 
       <div class="form-group">
         <label>Transaction Type</label>
-        <select class="form-input">
-          <option value="" disabled selected>Select execution type</option>
+        <select class="form-input" name="type" [(ngModel)]="transaction.type" required>
+          <option value="" disabled>Select execution type</option>
           <option value="expense">Expense (Debit)</option>
           <option value="income">Income (Credit)</option>
         </select>
@@ -27,24 +49,33 @@
 
       <div class="form-group">
         <label>Category Allocation</label>
-        <select class="form-input">
-          <option value="" disabled selected>Select target allocation</option>
-          <option value="housing">Housing & Utilities</option>
-          <option value="dining">Food & Dining</option>
-          <option value="transport">Transport</option>
-          <option value="income">Core Income</option>
+        <select class="form-input" name="category" [(ngModel)]="transaction.category" required>
+          <option value="" disabled>Select target allocation</option>
+          <option value="Housing">Housing & Utilities</option>
+          <option value="Food">Food & Dining</option>
+          <option value="Transport">Transport</option>
+          <option value="Entertainment">Entertainment</option>
+          <option value="Shopping">Shopping</option>
+          <option value="Income">Core Income</option>
         </select>
       </div>
 
       <div class="form-group">
         <label>Execution Date</label>
-        <input type="date" class="form-input" />
+        <input
+          type="date"
+          name="date"
+          [(ngModel)]="transaction.date"
+          class="form-input"
+          required />
       </div>
     </div>
 
     <div class="form-actions">
       <button type="button" class="btn-secondary" (click)="onCancel()">Cancel</button>
-      <button type="submit" class="btn-primary">Commit Transaction</button>
+      <button type="submit" class="btn-primary" [disabled]="isSubmitting">
+        {{ isSubmitting ? 'Saving...' : 'Commit Transaction' }}
+      </button>
     </div>
   </form>
 </div>

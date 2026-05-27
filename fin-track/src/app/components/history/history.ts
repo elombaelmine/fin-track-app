@@ -38,12 +38,10 @@ export class History implements OnInit {
 
   constructor(private apiService: ApiService) {}
 
- // In overview.ts
-ngOnInit(): void {
+  ngOnInit(): void {
     this.apiService.getTransactions().subscribe({
       next: (data: any) => {
         this.allTransactions = (data as Transaction[]) || [];
-        // CHANGE THIS: Call the correct method for the History component
         this.applyFilters(); 
       },
       error: (err) => console.error('Error loading history:', err)
@@ -61,17 +59,20 @@ ngOnInit(): void {
   }
 
   applyFilters(): void {
-    // 1. Filter the master list based on dropdown state
     this.transactions = this.allTransactions.filter(t => {
+      const transactionDate = new Date(t.date);
+      const earliestDate = new Date();
+      earliestDate.setDate(earliestDate.getDate() - Number(this.filters.days));
+
+      const matchDate = transactionDate >= earliestDate;
       const matchCategory = this.filters.category === 'all' || 
                             t.category.toLowerCase() === this.filters.category.toLowerCase();
       const matchStatus = this.filters.status === 'all' || 
-                          t.status.toLowerCase() === this.filters.status.toLowerCase();
+                          (t.status || 'Completed').toLowerCase() === this.filters.status.toLowerCase();
       
-      return matchCategory && matchStatus;
+      return matchDate && matchCategory && matchStatus;
     });
 
-    // 2. Re-calculate financial totals based on the filtered results
     this.calculateSummaries();
   }
 }
