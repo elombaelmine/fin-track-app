@@ -1,0 +1,24 @@
+<header class="top-header">
+  <div class="search-box-wrapper">
+    <input type="text" class="search-input" placeholder="Search transactions, reports..." />
+  </div>
+
+  <div class="user-profile-widget">
+    <div class="notification-bell">
+      <span class="bell-icon">🔔</span>
+    </div>
+    
+    <div class="user-meta-info">
+      <div class="user-name-placeholder">
+        {{ currentUsername }}
+      </div>
+      <div class="user-role-placeholder">
+        System Operator
+      </div>
+    </div>
+                
+    <div class="user-avatar-placeholder">
+      {{ currentUsername.charAt(0).toUpperCase() }}
+    </div>
+  </div>
+</header>

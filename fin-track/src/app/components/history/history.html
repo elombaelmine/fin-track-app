@@ -1,0 +1,93 @@
+<div class="main container">
+    
+    <div class="slide1">
+        <div class="left">
+            <h1>History</h1>
+            <p>Review and manage your stewardship records.</p>
+        </div>
+        <div class="right">
+            <div class="summary-card income">
+                <div class="icon">📈</div>
+                <div class="card-details">
+                    <h3>NET INCOME</h3>
+                    <p>{{ netIncome | currency:'XAF':'symbol':'1.0-0' }}</p>
+                </div>
+            </div>
+            <div class="summary-card expenses">
+                <div class="icon">📉</div>
+                <div class="card-details">
+                    <h3>TOTAL EXPENSES</h3>
+                    <p>{{ totalExpenses | currency:'XAF':'symbol':'1.0-0' }}</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="slide2"> 
+        <div class="dropdowns-grid">
+            <div class="filter-box">
+                <label for="days">Date Range</label>
+                <select [(ngModel)]="filters.days" id="days">
+                    <option value="7">Last 7 Days</option>
+                    <option value="30">Last 30 Days</option>
+                    <option value="90">Last 90 Days</option>
+                </select>
+            </div>  
+            <div class="filter-box">
+                <label for="category">Category</label>
+                <select [(ngModel)]="filters.category" id="category">
+                    <option value="all">All Categories</option>
+                    <option value="housing">Housing & Utilities</option>
+                    <option value="food">Food & Dining</option>
+                    <option value="transport">Transport</option>
+                    <option value="entertainment">Entertainment</option>
+                </select>
+            </div>
+            <div class="filter-box">
+                <label for="status">Status</label>
+                <select [(ngModel)]="filters.status" id="status">
+                    <option value="all">All Transactions</option>
+                    <option value="completed">Completed</option>
+                    <option value="pending">Pending</option>
+                </select>
+            </div>
+        </div>
+        <button class="btnapply" (click)="applyFilters()">Apply</button>
+    </div>
+
+    <div class="slide3">
+        <div class="table-header">
+            <h2>DATE</h2>
+            <h2>MERCHANT / TRANSACTION</h2>
+            <h2>CATEGORY</h2>
+            <h2>STATUS</h2>
+            <h2>AMOUNT</h2>
+        </div>
+        
+        <div class="transaction-list">
+            <div class="transaction-row" *ngFor="let item of transactions">
+                <div class="cell date-cell">
+                    <span class="main-date">{{ item.date | date:'MMM d, y' }}</span>
+                </div>
+                <div class="cell merchant-cell">
+                    <span>{{ item.description }}</span>
+                </div>
+                <div class="cell label-cell">
+                    <span class="badge category-badge">{{ item.category }}</span>
+                </div>
+                <div class="cell label-cell">
+                    <span class="status-indicator" [ngClass]="item.status.toLowerCase()">
+                        ● {{ item.status }}
+                    </span>
+                </div>
+                <div class="cell amount-cell" [ngClass]="item.type">
+                    {{ item.type === 'income' ? '+' : '-' }}{{ item.amount | currency:'XAF':'symbol':'1.0-0' }}
+                </div>
+            </div>
+
+            <div class="empty-state" *ngIf="transactions.length === 0">
+                <p>No stewardship records found.</p>
+            </div>
+        </div>
+    </div>
+</div>

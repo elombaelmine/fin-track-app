@@ -1,0 +1,77 @@
+<div class="main-container">
+  
+  <div class="slide1">
+    <div class="text">
+      <h1>Welcome to FinTrack, {{ username }}</h1>
+      <p>Here's what's happening with your finances today.</p>
+    </div>
+    <div class="total-balance-card">
+      <h2>Total Balance</h2>
+      <p [ngClass]="{'positive-funds': totalBalance >= 0, 'negative-funds': totalBalance < 0}">
+        {{ totalBalance | currency:'XAF':'symbol':'1.0-0' }}
+      </p>
+    </div>
+  </div>
+
+  <div class="slide2">
+    <div class="left-card">
+      <div class="card-header">
+        <h2>Monthly Budget</h2>
+        <h6 class="menu-dots">...</h6>
+      </div>
+      <div class="progressbar-stats">
+        <h4>Spent: <span>{{ totalSpent | currency:'XAF':'symbol':'1.0-0' }}</span></h4>
+        <h4>Total: <span>{{ monthlyBudgetLimit | currency:'XAF':'symbol':'1.0-0' }}</span></h4>
+      </div>
+      <p class="budget-remaining-text">
+        You have {{ (monthlyBudgetLimit - totalSpent) | currency:'XAF':'symbol':'1.0-0' }} left for the next {{ daysLeft }} days.
+      </p>
+      <div class="bottom-metrics">
+        <div class="metric-box">Daily AVG: <strong>{{ dailyAverage | currency:'XAF':'symbol':'1.0-0' }}</strong></div>
+        <div class="metric-box">PROJECTED: <strong>{{ projectedSpending | currency:'XAF':'symbol':'1.0-0' }}</strong></div>
+      </div>
+    </div>
+    
+    <div class="right-card">
+      <div class="card-header">
+        <h1>Spending by Category</h1>
+        <div class="timeframe-pill">this month</div>
+      </div>
+      <div class="category-chart">
+        <div class="cat-row"><p>Housing</p> <strong>{{ getCategoryCost('Housing') | currency:'XAF':'symbol':'1.0-0' }}</strong></div>
+        <div class="cat-row"><p>Food</p> <strong>{{ getCategoryCost('Food') | currency:'XAF':'symbol':'1.0-0' }}</strong></div>
+        <div class="cat-row"><p>Transport</p> <strong>{{ getCategoryCost('Transport') | currency:'XAF':'symbol':'1.0-0' }}</strong></div>
+        <div class="cat-row"><p>Entertainment</p> <strong>{{ getCategoryCost('Entertainment') | currency:'XAF':'symbol':'1.0-0' }}</strong></div>
+      </div>
+    </div> 
+  </div>
+
+  <div class="slide3">
+    <div class="table-header-wrapper">
+      <h1>Recent Transactions</h1>
+      <h6 class="download-btn">Download Report</h6>
+    </div>
+    <div class="heading-row">
+      <h2>TRANSACTION</h2>
+      <h2>CATEGORY</h2>
+      <h2>DATE</h2>
+      <h2>AMOUNT</h2>
+      <h2>STATUS</h2>
+    </div>
+
+    <div class="transaction-data-row" *ngFor="let item of transactions">
+      <div class="cell">{{ item.description }}</div>
+      <div class="cell"><span class="cat-badge">{{ item.category }}</span></div>
+      <div class="cell">{{ item.date | date:'mediumDate' }}</div>
+      <div class="cell" [ngClass]="item.type">
+        {{ item.type === 'income' ? '+' : '-' }}{{ item.amount | currency:'XAF':'symbol':'1.0-0' }}
+      </div>
+      <div class="cell">
+        <span class="status-indicator" [className]="'status-' + (item.status || 'Completed').toLowerCase()">
+          {{ item.status || 'Completed' }}
+        </span>
+      </div>
+    </div>
+  </div>
+
+</div>

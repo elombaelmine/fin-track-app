@@ -1,0 +1,371 @@
+.main.container {
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 32px;
+  background-color: #f8fafc;
+  min-height: 100vh;
+  font-family: system-ui, -apple-system, sans-serif;
+}
+
+/* ==========================================
+   HEADER ROW SETUP 
+   ========================================== */
+.view-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.header-text h1 {
+  font-size: 28px;
+  color: #0f172a;
+  margin: 0 0 4px 0;
+}
+
+.header-text p {
+  color: #64748b;
+  font-size: 14px;
+  margin: 0;
+}
+
+.header-actions {
+  display: flex;
+  gap: 12px;
+}
+
+.btn-primary, .btn-primary-sm {
+  background-color: #3b30e5; /* Matches core purple accent color token */
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 8px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.btn-secondary, .btn-secondary-sm {
+  background-color: white;
+  color: #475569;
+  border: 1px solid #e2e8f0;
+  padding: 10px 20px;
+  border-radius: 8px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+/* ==========================================
+   METRIC SUMMARY GRID & BANNER SECTION
+   ========================================== */
+.summary-workspace {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr) 1.5fr; /* Fits three standard cards and insights banner */
+  gap: 20px;
+}
+
+.metric-card {
+  background: white;
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.02);
+}
+
+.metric-card .label {
+  font-size: 12px;
+  color: #64748b;
+  font-weight: 600;
+}
+
+.metric-card .amount {
+  font-size: 24px;
+  color: #0f172a;
+  margin: 12px 0;
+  font-weight: 700;
+}
+
+.metric-card .amount.positive { color: #10b981; }
+
+.trend.up { font-size: 12px; color: #10b981; font-weight: 500; }
+.subtext { font-size: 12px; color: #64748b; }
+
+.bar-wrapper {
+  background: #f1f5f9;
+  height: 6px;
+  border-radius: 4px;
+  overflow: hidden;
+  margin-top: auto;
+}
+
+.mini-progress-bar {
+  background: #3b30e5;
+  height: 100%;
+}
+
+/* Smart Insights Deep Purple Accent Card Banner */
+.insights-banner {
+  background: linear-gradient(135deg, #1e1b4b 0%, #312e81 100%);
+  color: white;
+  border-radius: 12px;
+  padding: 20px;
+}
+
+.banner-content h3 {
+  font-size: 14px;
+  font-weight: 700;
+  margin: 0 0 8px 0;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+}
+
+.banner-content p {
+  font-size: 13px;
+  color: #c7d2fe;
+  line-height: 1.5;
+  margin: 0 0 14px 0;
+}
+
+.btn-banner-action {
+  background: white;
+  color: #1e1b4b;
+  border: none;
+  padding: 8px 14px;
+  border-radius: 6px;
+  font-weight: 600;
+  font-size: 12px;
+  cursor: pointer;
+}
+
+/* ==========================================
+   CATEGORY TRACKERS ROW/GRID INTERFACES
+   ========================================== */
+.section-block {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.section-title {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.section-title h2 {
+  font-size: 18px;
+  color: #0f172a;
+  margin: 0;
+}
+
+.categories-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 20px;
+}
+
+.category-card {
+  background: white;
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+}
+
+.card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+}
+
+.cat-icon {
+  background: #f1f5f9;
+  width: 36px;
+  height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 8px;
+  font-size: 16px;
+}
+
+.status-pill {
+  font-size: 10px;
+  font-weight: 700;
+  padding: 4px 8px;
+  border-radius: 20px;
+  letter-spacing: 0.5px;
+}
+
+.status-pill.on-track, .fill-bar.on-track { background-color: #d1fae5; color: #065f46; }
+.status-pill.warning, .fill-bar.warning { background-color: #fee2e2; color: #991b1b; }
+
+/* Overwrite background color fill rules for bar charts */
+.fill-bar.on-track { background-color: #10b981; }
+.fill-bar.warning { background-color: #ef4444; }
+
+.cat-name {
+  font-size: 15px;
+  color: #0f172a;
+  margin: 0 0 4px 0;
+}
+
+.cat-math {
+  font-size: 13px;
+  color: #64748b;
+  margin: 0 0 16px 0;
+}
+
+.progress-container {
+  background: #f1f5f9;
+  height: 8px;
+  border-radius: 4px;
+  overflow: hidden;
+  margin-bottom: 14px;
+}
+
+.fill-bar {
+  height: 100%;
+  border-radius: 4px;
+}
+
+.card-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: auto;
+}
+
+.pct-text { font-size: 12px; color: #64748b; font-weight: 500; }
+.btn-text-action {
+  background: none;
+  border: none;
+  color: #3b30e5;
+  font-weight: 600;
+  font-size: 12px;
+  cursor: pointer;
+}
+
+/* Dashed wireframe frame helper wrapper block styles */
+.dashed-add-box {
+  border: 2px dashed #cbd5e1;
+  background: transparent;
+  justify-content: center;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+}
+
+.add-plus-icon { font-size: 20px; color: #64748b; }
+.add-box-text { font-size: 14px; font-weight: 600; color: #64748b; }
+
+/* ==========================================
+   SAVINGS STACK TRACKER ENGINE LAYOUT
+   ========================================== */
+.goals-stack {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.goal-row-card {
+  background: white;
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+  padding: 24px;
+  display: flex;
+  align-items: center;
+  gap: 24px;
+}
+
+/* Radial SVG Circular Ring Component Simulation Mask Box mapping */
+.circle-svg-mock {
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
+  background: conic-gradient(#3b30e5 calc(var(--pct-val) * 1%), #e2e8f0 0);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+}
+
+.circle-svg-mock::after {
+  content: '';
+  position: absolute;
+  width: 52px;
+  height: 52px;
+  background: white;
+  border-radius: 50%;
+}
+
+.radial-pct-label {
+  position: relative;
+  z-index: 2;
+  font-size: 12px;
+  font-weight: 700;
+  color: #0f172a;
+}
+
+.goal-profile {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  flex: 1;
+}
+
+.goal-profile h3 {
+  font-size: 16px;
+  color: #0f172a;
+  margin: 0;
+}
+
+.goal-meta {
+  font-size: 13px;
+  color: #64748b;
+  margin: 0 0 12px 0;
+}
+
+.goal-sub-metrics {
+  display: flex;
+  gap: 24px;
+}
+
+.sub-metric {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.sm-label { font-size: 10px; font-weight: 700; color: #94a3b8; letter-spacing: 0.5px; }
+.sm-value { font-size: 13px; font-weight: 600; color: #475569; }
+.sm-value.highlighted { color: #3b30e5; }
+
+.goal-value-actions {
+  display: flex;
+  align-items: center;
+  gap: 32px;
+}
+
+.live-balance-box {
+  text-align: right;
+}
+
+.current-saved-lbl { font-size: 12px; color: #64748b; }
+.saved-big-amount { font-size: 24px; color: #0f172a; margin: 4px 0 0 0; font-weight: 700; }
+
+.row-buttons-stack {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.btn-primary-sm, .btn-secondary-sm {
+  padding: 8px 16px;
+  font-size: 12px;
+  width: 100px;
+  text-align: center;
+}

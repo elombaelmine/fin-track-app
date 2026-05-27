@@ -1,0 +1,118 @@
+<div class="main container">
+    
+    <div class="view-header">
+        <div class="header-text">
+            <h1>Budgets & Savings</h1>
+            <p>Allocating resources for a secure financial future.</p>
+        </div>
+        <div class="header-actions">
+            <button class="btn-secondary">📤 Export PDF</button>
+            <button class="btn-primary">➕ New Budget</button>
+        </div>
+    </div>
+
+    <div class="summary-workspace">
+        <div class="metric-card">
+            <span class="label">Total Monthly Budget</span>
+            <h2 class="amount">{{ totalMonthlyBudget }}</h2>
+            <span class="trend up">📈 12% from last month</span>
+        </div>
+        <div class="metric-card">
+            <span class="label">Total Spent</span>
+            <h2 class="amount">{{ totalSpent }}</h2>
+            <div class="bar-wrapper">
+                <div class="mini-progress-bar" style="width: 66%"></div>
+            </div>
+        </div>
+        <div class="metric-card">
+            <span class="label">Remaining</span>
+            <h2 class="amount positive">{{ totalRemaining }}</h2>
+            <span class="subtext">🗓️ {{ daysLeft }} Days Left</span>
+        </div>
+        
+        <div class="insights-banner">
+            <div class="banner-content">
+                <h3>Smart Insights</h3>
+                <p>You're on track to save $450 more than last month. Consider moving these to your "Europe Trip" goal.</p>
+                <button class="btn-banner-action">Move Funds Now</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="section-block">
+        <div class="section-title">
+            <span>📊</span> <h2>Category Budgets</h2>
+        </div>
+        <div class="categories-grid">
+            <div class="category-card" *ngFor="let cat of categoryBudgets">
+                <div class="card-header">
+                    <div class="cat-icon">{{ cat.icon }}</div>
+                    <span class="status-pill" [ngClass]="cat.status.toLowerCase().replace(' ', '-')">
+                        {{ cat.status }}
+                    </span>
+                </div>
+                <h3 class="cat-name">{{ cat.name }}</h3>
+                <p class="cat-math">{{ cat.spent | currency }} spent of {{ cat.limit | currency }}</p>
+                
+                <div class="progress-container">
+                    <div class="fill-bar" 
+                         [ngClass]="cat.status.toLowerCase().replace(' ', '-')"
+                         [style.width.%]="cat.percentage"></div>
+                </div>
+                
+                <div class="card-footer">
+                    <span class="pct-text">{{ cat.percentage }}% Used</span>
+                    <button class="btn-text-action">Details</button>
+                </div>
+            </div>
+
+            <div class="category-card dashed-add-box">
+                <span class="add-plus-icon">➕</span>
+                <span class="add-box-text">Add Category</span>
+            </div>
+        </div>
+    </div>
+
+    <div class="section-block">
+        <div class="section-title">
+            <span>🔮</span> <h2>Savings Goals</h2>
+        </div>
+        <div class="goals-stack">
+            <div class="goal-row-card" *ngFor="let goal of savingsGoals">
+                <div class="radial-progress-box">
+                    <div class="circle-svg-mock" [style.--pct-val]="goal.achievedPct">
+                        <span class="radial-pct-label">{{ goal.achievedPct }}%</span>
+                    </div>
+                </div>
+                
+                <div class="goal-profile">
+                    <h3>{{ goal.title }}</h3>
+                    <p class="goal-meta">Target: {{ goal.target | currency }} • {{ goal.deadline }}</p>
+                    
+                    <div class="goal-sub-metrics">
+                        <div class="sub-metric">
+                            <span class="sm-label">REMAINING</span>
+                            <span class="sm-value">{{ goal.target - goal.saved | currency }}</span>
+                        </div>
+                        <div class="sub-metric">
+                            <span class="sm-label">SUGGESTED MONTHLY</span>
+                            <span class="sm-value highlighted">{{ goal.suggestedMonthly | currency }}</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="goal-value-actions">
+                    <div class="live-balance-box">
+                        <span class="current-saved-lbl">Currently Saved</span>
+                        <h2 class="saved-big-amount">{{ goal.saved | currency }}</h2>
+                    </div>
+                    <div class="row-buttons-stack">
+                        <button class="btn-primary-sm">Add Funds</button>
+                        <button class="btn-secondary-sm">Edit Goal</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</div>

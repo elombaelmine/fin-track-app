@@ -1,0 +1,50 @@
+<div class="form-container">
+  <header class="form-header">
+    <h2 class="page-title">Record New Transaction</h2>
+    <p class="page-subtitle">Log an expenditure or asset injection to maintain ledger synchronization.</p>
+  </header>
+
+  <form class="transaction-form" (ngSubmit)="onSubmitTransaction()">
+    <div class="form-grid">
+      <div class="form-group full-width">
+        <label>Merchant / Description</label>
+        <input type="text" placeholder="e.g., Apple Store Online, Corporate Salary" class="form-input" />
+      </div>
+
+      <div class="form-group">
+        <label>Amount</label>
+        <input type="text" placeholder="$ 0.00" class="form-input" />
+      </div>
+
+      <div class="form-group">
+        <label>Transaction Type</label>
+        <select class="form-input">
+          <option value="" disabled selected>Select execution type</option>
+          <option value="expense">Expense (Debit)</option>
+          <option value="income">Income (Credit)</option>
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label>Category Allocation</label>
+        <select class="form-input">
+          <option value="" disabled selected>Select target allocation</option>
+          <option value="housing">Housing & Utilities</option>
+          <option value="dining">Food & Dining</option>
+          <option value="transport">Transport</option>
+          <option value="income">Core Income</option>
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label>Execution Date</label>
+        <input type="date" class="form-input" />
+      </div>
+    </div>
+
+    <div class="form-actions">
+      <button type="button" class="btn-secondary" (click)="onCancel()">Cancel</button>
+      <button type="submit" class="btn-primary">Commit Transaction</button>
+    </div>
+  </form>
+</div>

@@ -1,0 +1,30 @@
+.main.container { padding: 40px; background: #f8fafc; min-height: 100vh; }
+
+/* Slide 1 Styles */
+.slide1 { display: flex; justify-content: space-between; align-items: center; margin-bottom: 40px; }
+.right { display: flex; gap: 20px; }
+.summary-card { background: white; padding: 20px; border-radius: 12px; display: flex; align-items: center; gap: 15px; border: 1px solid #e2e8f0; min-width: 200px; }
+.card-details h3 { font-size: 11px; color: #64748b; margin: 0; }
+.card-details p { font-size: 18px; font-weight: 700; margin: 5px 0 0 0; }
+
+/* Slide 2 Styles */
+.slide2 { display: flex; gap: 20px; align-items: flex-end; margin-bottom: 30px; }
+.dropdowns-grid { display: flex; gap: 20px; }
+.filter-box { display: flex; flex-direction: column; gap: 8px; }
+.btnapply { padding: 10px 20px; background: #1e293b; color: white; border: none; border-radius: 6px; cursor: pointer; }
+
+/* Table Styles */
+.slide3 { background: white; border-radius: 16px; border: 1px solid #e2e8f0; overflow: hidden; }
+.table-header { display: grid; grid-template-columns: 1fr 2fr 1fr 1fr 1fr; padding: 20px; border-bottom: 2px solid #f1f5f9; background: #f8fafc; }
+.table-header h2 { font-size: 11px; color: #94a3b8; text-transform: uppercase; }
+
+.transaction-row { display: grid; grid-template-columns: 1fr 2fr 1fr 1fr 1fr; padding: 20px; border-bottom: 1px solid #f1f5f9; align-items: center; }
+.cell { font-size: 14px; color: #334155; }
+.badge { background: #f1f5f9; padding: 4px 8px; border-radius: 6px; font-size: 11px; }
+
+/* Status & Type Colors */
+.completed { color: #10b981; }
+.pending { color: #f59e0b; }
+.income { color: #10b981; font-weight: 600; }
+.expense { color: #ef4444; font-weight: 600; }
+.empty-state { padding: 40px; text-align: center; color: #94a3b8; }

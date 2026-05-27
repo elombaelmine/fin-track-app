@@ -1,0 +1,36 @@
+/* Container & Global Layout */
+.main-container { padding: 32px 40px; background: #f8fafc; min-height: 100vh; }
+
+/* Slide 1 Styles */
+.slide1 { display: flex; justify-content: space-between; align-items: center; margin-bottom: 40px; }
+.total-balance-card { background: #ffffff; padding: 24px 32px; border-radius: 16px; border: 1px solid #e2e8f0; }
+.total-balance-card p { font-size: 28px; font-weight: 800; color: #1e293b; white-space: nowrap; }
+
+/* Slide 2 Styles */
+.slide2 { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; margin-bottom: 40px; }
+.left-card, .right-card { background: #ffffff; padding: 24px; border-radius: 16px; border: 1px solid #e2e8f0; }
+
+/* Metric Styling */
+.card-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
+.progressbar-stats { display: flex; gap: 20px; color: #64748b; font-size: 13px; margin-bottom: 10px; }
+.bottom-metrics { display: flex; gap: 16px; margin-top: 20px; }
+.metric-box { padding: 12px; background: #f1f5f9; border-radius: 8px; font-size: 12px; color: #475569; }
+.cat-row { display: flex; justify-content: space-between; padding: 10px 0; border-bottom: 1px solid #f1f5f9; }
+
+/* Slide 3 Table Styling */
+.slide3 { background: #ffffff; padding: 24px; border-radius: 16px; border: 1px solid #e2e8f0; }
+.table-header-wrapper { display: flex; justify-content: space-between; align-items: center; }
+.heading-row { display: flex; justify-content: space-between; padding: 16px 0; border-bottom: 2px solid #f1f5f9; margin-top: 20px; }
+.heading-row h2 { font-size: 11px; color: #94a3b8; letter-spacing: 0.5px; text-transform: uppercase; flex: 1; }
+
+.transaction-data-row { display: flex; justify-content: space-between; align-items: center; padding: 20px 0; border-bottom: 1px solid #f8fafc; }
+.cell { flex: 1; font-size: 14px; color: #334155; }
+
+/* Badge & Status Colors */
+.cat-badge { background: #f1f5f9; padding: 4px 8px; border-radius: 6px; font-size: 11px; color: #64748b; }
+.income { color: #10b981; font-weight: 600; }
+.expense { color: #ef4444; font-weight: 600; }
+.status-completed { color: #10b981; }
+.status-pending { color: #f59e0b; }
+.positive-funds { color: #059669; }
+.negative-funds { color: #dc2626; }

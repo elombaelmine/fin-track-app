@@ -1,0 +1,105 @@
+/* ==========================================
+   FINTRACK MANAGEMENT SYSTEM LIGHT BAR HEADER
+   ========================================== */
+
+:root {
+  --header-bg: #ffffff;
+  --header-border: #f0f2f5;
+  --text-dark: #1e293b;
+  --text-muted: #94a3b8;
+  --avatar-bg: #cbd5e1; /* Soft gray circular skeleton from your screenshot */
+}
+
+.top-header {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 16px 40px;
+  background: var(--header-bg);
+  border-bottom: 2px solid var(--header-border);
+  height: 80px;
+  box-sizing: border-box;
+}
+
+/* --- Search Bar Container --- */
+.search-box-wrapper {
+  flex: 0 1 320px;
+}
+
+.search-input {
+  width: 100%;
+  padding: 12px 20px;
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 20px; /* Clean, pill-shaped layout from your UI */
+  color: var(--text-dark);
+  font-size: 14px;
+  outline: none;
+  transition: all 0.2s ease;
+}
+
+.search-input:focus {
+  border-color: var(--text-muted);
+  background: #ffffff;
+}
+
+.search-input::placeholder {
+  color: #94a3b8;
+}
+
+/* --- Profile Section Widget Wrapper --- */
+.user-profile-widget {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+
+.notification-bell {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  font-size: 20px;
+  color: #ffb800; /* Soft gold/orange bell accent from your UI */
+}
+
+/* --- Username & Role Layout Blocks --- */
+.user-meta-info {
+  display: flex;
+  flex-direction: column;
+  text-align: right;
+  min-width: 100px; /* Ensures text block has space to render */
+}
+
+.user-name-placeholder {
+  color: var(--text-dark);
+  font-size: 14px;
+  font-weight: 700; /* Bold style matching your "Welcome" banner */
+  text-transform: capitalize;
+}
+
+.user-role-placeholder {
+  color: var(--text-muted);
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 0.3px;
+  margin-top: 2px;
+}
+
+/* --- Circular Avatar Frame --- */
+.user-avatar-placeholder {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  background-color: var(--avatar-bg); /* Matches the gray profile circle shape */
+  border-radius: 50%; /* Perfectly rounded circle badge */
+  color: #ffffff;
+  font-size: 14px;
+  font-weight: 600;
+  user-select: none;
+}
