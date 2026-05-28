@@ -10,6 +10,23 @@ body {
   color: #212529;
 }
 
+.material-symbols-outlined {
+  direction: ltr;
+  display: inline-flex;
+  flex-shrink: 0;
+  font-family: 'Material Symbols Outlined';
+  font-size: 20px;
+  font-style: normal;
+  font-weight: normal;
+  letter-spacing: normal;
+  line-height: 1;
+  text-transform: none;
+  white-space: nowrap;
+  word-wrap: normal;
+  -webkit-font-feature-settings: 'liga';
+  -webkit-font-smoothing: antialiased;
+}
+
 .app-container {
   display: flex;
   height: 100vh;

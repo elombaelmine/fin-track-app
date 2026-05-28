@@ -6,6 +6,7 @@ import { Overview } from './components/overview/overview';
 import { Settings } from './components/settings/settings';
 import { Support } from './components/support/support';
 import { AddTransaction } from './components/add-transaction/add-transaction';
+import { Notifications } from './components/notifications/notifications';
 
 export const routes: Routes = [
   { path: 'auth', component: Auth },
@@ -14,6 +15,7 @@ export const routes: Routes = [
   { path: 'history', component: History },  
   { path: 'support', component: Support },
   { path: 'settings', component: Settings }, // Reusing Settings component
+  { path: 'notifications', component: Notifications },
   { path: 'add-transaction', component: AddTransaction },
 
   // Change default landing redirect from '/overview' to '/auth'

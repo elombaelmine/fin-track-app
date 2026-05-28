@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import { ApiService } from '../../api.service';
+import { NotificationService } from '../../notification.service';
 
 @Component({
   selector: 'app-add-transaction',
@@ -27,7 +28,8 @@ export class AddTransaction implements OnInit {
 
   constructor(
     private router: Router,
-    private apiService: ApiService
+    private apiService: ApiService,
+    private notificationService: NotificationService
   ) { }
 
   ngOnInit(): void {
@@ -56,6 +58,7 @@ export class AddTransaction implements OnInit {
       next: () => {
         this.successMessage = 'Transaction saved successfully.';
         this.isSubmitting = false;
+        this.notificationService.refreshBudgetNotifications();
         setTimeout(() => this.router.navigate(['/overview']), 700);
       },
       error: (err) => {

@@ -1,25 +1,53 @@
-import { Component, inject, OnInit } from '@angular/core';
+import { Component, EventEmitter, inject, OnInit, Output } from '@angular/core';
+import { CommonModule } from '@angular/common';
 import { RouterLink, RouterLinkActive, Router} from '@angular/router';
-import { AddTransaction } from '../add-transaction/add-transaction';
+import { ApiService } from '../../api.service';
 
 
 @Component({
   selector: 'app-sidebar',
   templateUrl: './sidebar.html',
   styleUrls: ['./sidebar.css'],
-  imports: [RouterLink,RouterLinkActive]
+  imports: [CommonModule, RouterLink, RouterLinkActive]
 })
 export class Sidebar implements OnInit {
+  @Output() navigated = new EventEmitter<void>();
 
-  constructor() { }
-  router = inject(Router)
+  currentUsername = '';
+  profileAvatar: string | null = null;
+
+  private router = inject(Router);
+  private apiService = inject(ApiService);
 
   ngOnInit(): void {
-    // Structural init goes here later
+    this.apiService.currentUser().subscribe(user => {
+      if (user) {
+        this.currentUsername = user.username || '';
+        this.profileAvatar = user.profileAvatar || null;
+      } else {
+        this.currentUsername = '';
+        this.profileAvatar = null;
+      }
+    });
   }
 
   onAddTransaction(): void {
-  this.router.navigate(['/add-transaction']);
+    this.router.navigate(['/add-transaction']);
+    this.notifyNavigation();
+  }
+
+  get displayUsername(): string {
+    return this.currentUsername.trim() || 'User';
+  }
+
+  notifyNavigation(): void {
+    this.navigated.emit();
+  }
+
+  logout(): void {
+    this.apiService.logout();
+    this.router.navigate(['/auth']);
+    this.notifyNavigation();
   }
 
 }

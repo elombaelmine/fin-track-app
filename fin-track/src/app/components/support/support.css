@@ -58,7 +58,9 @@
 }
 
 .feature-item strong {
-  display: block;
+  display: flex;
+  align-items: center;
+  gap: 8px;
   font-size: 14px;
   color: #212529;
   margin-bottom: 6px;
@@ -89,6 +91,7 @@
 
 .email-icon {
   font-size: 24px;
+  color: #3b30e5;
 }
 
 .badge-details {
@@ -113,4 +116,43 @@
 
 .email-link:hover {
   text-decoration: underline;
+}
+
+@media (max-width: 720px) {
+  .support-container {
+    gap: 20px;
+    padding: 18px 14px;
+  }
+
+  .page-title {
+    font-size: 24px;
+  }
+
+  .page-subtitle,
+  .admin-contact p,
+  .summary-text {
+    font-size: 13px;
+  }
+
+  .support-grid {
+    gap: 16px;
+  }
+
+  .support-card {
+    padding: 16px;
+    border-radius: 8px;
+  }
+
+  .support-card h3 {
+    font-size: 17px;
+  }
+
+  .feature-highlights {
+    grid-template-columns: 1fr;
+    gap: 12px;
+  }
+
+  .contact-badge {
+    width: 100%;
+  }
 }

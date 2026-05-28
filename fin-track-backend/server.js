@@ -10,13 +10,25 @@ const JWT_SECRET = process.env.JWT_SECRET || 'FINTRACK_SUPER_SECRET_KEY_2026';
 const allowedOrigins = new Set([
   'http://localhost:4200',
   'http://127.0.0.1:4200',
+  'http://localhost:4201',
+  'http://127.0.0.1:4201',
+  'http://localhost:4202',
+  'http://127.0.0.1:4202',
   process.env.CLIENT_ORIGIN
 ].filter(Boolean));
 
-app.use(express.json());
+function isAllowedOrigin(origin) {
+  if (!origin || allowedOrigins.has(origin)) {
+    return true;
+  }
+
+  return /^http:\/\/(localhost|127\.0\.0\.1):42\d{2}$/.test(origin);
+}
+
+app.use(express.json({ limit: '2mb' }));
 app.use(cors({
   origin(origin, callback) {
-    if (!origin || allowedOrigins.has(origin)) {
+    if (isAllowedOrigin(origin)) {
       callback(null, true);
       return;
     }
@@ -32,8 +44,14 @@ async function ensureDatabase() {
       username TEXT UNIQUE NOT NULL,
       email TEXT UNIQUE NOT NULL,
       password TEXT NOT NULL,
+      profile_avatar TEXT,
       created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
     );
+  `);
+
+  await pool.query(`
+    ALTER TABLE system_operators
+    ADD COLUMN IF NOT EXISTS profile_avatar TEXT;
   `);
 
   await pool.query(`
@@ -114,7 +132,7 @@ app.post('/api/auth/register', async (req, res) => {
     const createdOperator = await pool.query(
       `INSERT INTO system_operators (username, email, password)
        VALUES ($1, $2, $3)
-       RETURNING id, username, email`,
+       RETURNING id, username, email, profile_avatar`,
       [username, email, hashedPassword]
     );
 
@@ -142,7 +160,7 @@ app.post('/api/auth/login', async (req, res) => {
     }
 
     const operatorResult = await pool.query(
-      'SELECT id, username, email, password FROM system_operators WHERE username = $1',
+      'SELECT id, username, email, password, profile_avatar FROM system_operators WHERE username = $1',
       [username]
     );
     const operator = operatorResult.rows[0];
@@ -159,7 +177,8 @@ app.post('/api/auth/login', async (req, res) => {
     const user = {
       id: Number(operator.id),
       username: operator.username,
-      email: operator.email
+      email: operator.email,
+      profileAvatar: operator.profile_avatar
     };
 
     return res.status(200).json({
@@ -176,7 +195,7 @@ app.post('/api/auth/login', async (req, res) => {
 app.get('/api/auth/me', authenticateToken, async (req, res) => {
   try {
     const operatorResult = await pool.query(
-      'SELECT id, username, email FROM system_operators WHERE id = $1',
+      'SELECT id, username, email, profile_avatar FROM system_operators WHERE id = $1',
       [req.user.id]
     );
     const operator = operatorResult.rows[0];
@@ -188,11 +207,97 @@ app.get('/api/auth/me', authenticateToken, async (req, res) => {
     return res.status(200).json({
       id: Number(operator.id),
       username: operator.username,
-      email: operator.email
+      email: operator.email,
+      profileAvatar: operator.profile_avatar
     });
   } catch (error) {
     console.error('Current user error:', error);
     return res.status(500).json({ message: 'Could not load current user.' });
+  }
+});
+
+app.patch('/api/auth/profile', authenticateToken, async (req, res) => {
+  try {
+    const email = req.body.email?.trim().toLowerCase();
+    const profileAvatar = typeof req.body.profileAvatar === 'string' ? req.body.profileAvatar.trim() : null;
+
+    if (!email) {
+      return res.status(400).json({ message: 'Email is required.' });
+    }
+
+    if (profileAvatar && !profileAvatar.startsWith('data:image/')) {
+      return res.status(400).json({ message: 'Avatar must be a valid image.' });
+    }
+
+    const updatedOperator = await pool.query(
+      `UPDATE system_operators
+       SET email = $1, profile_avatar = $2
+       WHERE id = $3
+       RETURNING id, username, email, profile_avatar`,
+      [email, profileAvatar || null, req.user.id]
+    );
+
+    const operator = updatedOperator.rows[0];
+    if (!operator) {
+      return res.status(404).json({ message: 'Account not found.' });
+    }
+
+    return res.status(200).json({
+      message: 'Profile updated successfully.',
+      user: {
+        id: Number(operator.id),
+        username: operator.username,
+        email: operator.email,
+        profileAvatar: operator.profile_avatar
+      }
+    });
+  } catch (error) {
+    if (error?.code === '23505') {
+      return res.status(409).json({ message: 'That email is already used by another account.' });
+    }
+
+    console.error('Profile update error:', error);
+    return res.status(500).json({ message: 'Could not update profile.' });
+  }
+});
+
+app.patch('/api/auth/password', authenticateToken, async (req, res) => {
+  try {
+    const { currentPassword, newPassword } = req.body;
+
+    if (!currentPassword || !newPassword) {
+      return res.status(400).json({ message: 'Current password and new password are required.' });
+    }
+
+    if (String(newPassword).length < 6) {
+      return res.status(400).json({ message: 'New password must be at least 6 characters.' });
+    }
+
+    const operatorResult = await pool.query(
+      'SELECT id, password FROM system_operators WHERE id = $1',
+      [req.user.id]
+    );
+    const operator = operatorResult.rows[0];
+
+    if (!operator) {
+      return res.status(404).json({ message: 'Account not found.' });
+    }
+
+    const passwordMatches = await bcrypt.compare(currentPassword, operator.password);
+    if (!passwordMatches) {
+      return res.status(401).json({ message: 'Current password is incorrect.' });
+    }
+
+    const hashedPassword = await bcrypt.hash(newPassword, 10);
+    await pool.query(
+      'UPDATE system_operators SET password = $1 WHERE id = $2',
+      [hashedPassword, req.user.id]
+    );
+
+    return res.status(200).json({ message: 'Password changed successfully.' });
+  } catch (error) {
+    console.error('Password update error:', error);
+    return res.status(500).json({ message: 'Could not change password.' });
   }
 });
 
