@@ -1,0 +1,1094 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>FinTrack System Documentation</title>
+  <style>
+    :root {
+      --page-bg: #f6f8fb;
+      --surface: #ffffff;
+      --surface-soft: #f9fbfe;
+      --ink: #0f172a;
+      --muted: #5d6d83;
+      --line: #dce5ef;
+      --line-strong: #c9d6e4;
+      --primary: #3156d4;
+      --primary-soft: #edf2ff;
+      --teal: #008a78;
+      --teal-soft: #e9f8f5;
+      --amber: #b77900;
+      --amber-soft: #fff7df;
+      --rose: #c5324a;
+      --rose-soft: #fff0f2;
+      --violet: #5944d7;
+      --shadow: 0 18px 48px rgba(15, 23, 42, 0.08);
+      --radius: 8px;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    html {
+      scroll-behavior: smooth;
+    }
+
+    body {
+      margin: 0;
+      background: var(--page-bg);
+      color: var(--ink);
+      font-family: Inter, "Segoe UI", Arial, sans-serif;
+      line-height: 1.6;
+    }
+
+    a {
+      color: inherit;
+    }
+
+    .page-shell {
+      min-height: 100vh;
+    }
+
+    .hero {
+      background:
+        linear-gradient(rgba(255, 255, 255, 0.07) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255, 255, 255, 0.07) 1px, transparent 1px),
+        #182449;
+      background-size: 28px 28px;
+      color: #ffffff;
+      padding: 34px 28px 42px;
+    }
+
+    .hero-inner,
+    .content {
+      width: min(1180px, calc(100% - 36px));
+      margin: 0 auto;
+    }
+
+    .topline {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 18px;
+      margin-bottom: 46px;
+    }
+
+    .brand-mark {
+      display: inline-flex;
+      align-items: center;
+      gap: 12px;
+      color: #ffffff;
+      text-decoration: none;
+    }
+
+    .brand-icon {
+      width: 42px;
+      height: 42px;
+      border-radius: 8px;
+      display: grid;
+      place-items: center;
+      background: #ffffff;
+      color: var(--primary);
+      font-weight: 900;
+      letter-spacing: 0;
+    }
+
+    .brand-copy strong {
+      display: block;
+      font-size: 18px;
+      line-height: 1.2;
+    }
+
+    .brand-copy span {
+      display: block;
+      color: #b9c5dc;
+      font-size: 12px;
+    }
+
+    .hero-badges {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      justify-content: flex-end;
+    }
+
+    .hero-badges span,
+    .pill {
+      display: inline-flex;
+      align-items: center;
+      min-height: 30px;
+      border-radius: 999px;
+      padding: 0 12px;
+      font-size: 12px;
+      font-weight: 800;
+      white-space: nowrap;
+    }
+
+    .hero-badges span {
+      border: 1px solid rgba(255, 255, 255, 0.22);
+      color: #dbe6ff;
+      background: rgba(255, 255, 255, 0.08);
+    }
+
+    .hero-grid {
+      display: grid;
+      grid-template-columns: minmax(0, 1.05fr) minmax(340px, 0.95fr);
+      gap: 34px;
+      align-items: stretch;
+    }
+
+    .hero h1 {
+      margin: 0 0 16px;
+      max-width: 780px;
+      font-size: 46px;
+      line-height: 1.05;
+      letter-spacing: 0;
+    }
+
+    .hero-lede {
+      max-width: 680px;
+      margin: 0 0 24px;
+      color: #d4ddf1;
+      font-size: 16px;
+    }
+
+    .hero-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-top: 24px;
+    }
+
+    .hero-actions a {
+      min-height: 42px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 8px;
+      padding: 0 16px;
+      text-decoration: none;
+      font-size: 13px;
+      font-weight: 900;
+    }
+
+    .primary-link {
+      background: #ffffff;
+      color: var(--primary);
+    }
+
+    .secondary-link {
+      border: 1px solid rgba(255, 255, 255, 0.28);
+      color: #ffffff;
+    }
+
+    .system-panel {
+      background: rgba(255, 255, 255, 0.96);
+      color: var(--ink);
+      border-radius: 12px;
+      padding: 18px;
+      box-shadow: var(--shadow);
+    }
+
+    .system-panel h2 {
+      margin: 0 0 16px;
+      font-size: 18px;
+    }
+
+    .system-flow {
+      display: grid;
+      gap: 12px;
+    }
+
+    .flow-node {
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      padding: 14px;
+      background: var(--surface-soft);
+    }
+
+    .flow-node strong {
+      display: block;
+      margin-bottom: 3px;
+      font-size: 14px;
+    }
+
+    .flow-node span {
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    .flow-arrow {
+      height: 18px;
+      color: var(--primary);
+      display: grid;
+      place-items: center;
+      font-weight: 900;
+    }
+
+    .content {
+      padding: 34px 0 48px;
+    }
+
+    .section {
+      margin-bottom: 28px;
+    }
+
+    .section-heading {
+      display: flex;
+      align-items: flex-end;
+      justify-content: space-between;
+      gap: 16px;
+      margin: 0 0 14px;
+    }
+
+    .section-heading h2 {
+      margin: 0;
+      font-size: 28px;
+      line-height: 1.15;
+    }
+
+    .section-heading p {
+      max-width: 560px;
+      margin: 0;
+      color: var(--muted);
+      font-size: 14px;
+    }
+
+    .toc {
+      position: sticky;
+      top: 0;
+      z-index: 20;
+      background: rgba(246, 248, 251, 0.94);
+      border-bottom: 1px solid var(--line);
+      backdrop-filter: blur(10px);
+    }
+
+    .toc-inner {
+      width: min(1180px, calc(100% - 36px));
+      margin: 0 auto;
+      display: flex;
+      gap: 8px;
+      overflow-x: auto;
+      padding: 10px 0;
+    }
+
+    .toc a {
+      flex: 0 0 auto;
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      background: #ffffff;
+      color: #334155;
+      padding: 7px 12px;
+      font-size: 12px;
+      font-weight: 800;
+      text-decoration: none;
+    }
+
+    .grid {
+      display: grid;
+      gap: 16px;
+    }
+
+    .grid.cols-2 {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .grid.cols-3 {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+
+    .grid.cols-4 {
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+    }
+
+    .card {
+      background: var(--surface);
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      padding: 20px;
+      box-shadow: 0 8px 22px rgba(15, 23, 42, 0.035);
+    }
+
+    .card h3 {
+      margin: 0 0 8px;
+      font-size: 18px;
+      line-height: 1.2;
+    }
+
+    .card p {
+      margin: 0;
+      color: var(--muted);
+      font-size: 14px;
+    }
+
+    .card ul {
+      margin: 12px 0 0;
+      padding-left: 18px;
+      color: var(--muted);
+      font-size: 14px;
+    }
+
+    .card li {
+      margin: 5px 0;
+    }
+
+    .kpi {
+      border-top: 4px solid var(--primary);
+    }
+
+    .kpi.teal {
+      border-top-color: var(--teal);
+    }
+
+    .kpi.amber {
+      border-top-color: var(--amber);
+    }
+
+    .kpi.rose {
+      border-top-color: var(--rose);
+    }
+
+    .module-tag {
+      display: inline-flex;
+      margin-bottom: 12px;
+      border-radius: 999px;
+      padding: 5px 9px;
+      font-size: 11px;
+      font-weight: 900;
+      background: var(--primary-soft);
+      color: var(--primary);
+    }
+
+    .module-tag.teal {
+      background: var(--teal-soft);
+      color: var(--teal);
+    }
+
+    .module-tag.amber {
+      background: var(--amber-soft);
+      color: var(--amber);
+    }
+
+    .module-tag.rose {
+      background: var(--rose-soft);
+      color: var(--rose);
+    }
+
+    .flow-lanes {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 12px;
+    }
+
+    .lane {
+      background: var(--surface);
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      overflow: hidden;
+    }
+
+    .lane h3 {
+      margin: 0;
+      padding: 12px 14px;
+      background: var(--surface-soft);
+      border-bottom: 1px solid var(--line);
+      font-size: 14px;
+    }
+
+    .lane ol {
+      margin: 0;
+      padding: 14px 14px 14px 32px;
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    .lane li {
+      margin: 0 0 10px;
+    }
+
+    .table-wrap {
+      overflow-x: auto;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: var(--surface);
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      min-width: 720px;
+      font-size: 13px;
+    }
+
+    th,
+    td {
+      padding: 12px 14px;
+      border-bottom: 1px solid var(--line);
+      text-align: left;
+      vertical-align: top;
+    }
+
+    th {
+      background: var(--surface-soft);
+      color: #334155;
+      font-size: 12px;
+      text-transform: uppercase;
+      letter-spacing: 0;
+    }
+
+    tr:last-child td {
+      border-bottom: 0;
+    }
+
+    code {
+      border: 1px solid #d8e2ee;
+      border-radius: 6px;
+      background: #f7fafc;
+      color: #0f315f;
+      padding: 2px 6px;
+      font-family: Consolas, "Courier New", monospace;
+      font-size: 0.92em;
+    }
+
+    pre {
+      overflow-x: auto;
+      margin: 12px 0 0;
+      padding: 14px;
+      border-radius: 8px;
+      border: 1px solid #24324a;
+      background: #111827;
+      color: #e7edf7;
+      font-size: 12px;
+      line-height: 1.5;
+    }
+
+    pre code {
+      border: 0;
+      padding: 0;
+      background: transparent;
+      color: inherit;
+    }
+
+    .schema {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 16px;
+    }
+
+    .schema-table {
+      background: var(--surface);
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      overflow: hidden;
+    }
+
+    .schema-table h3 {
+      margin: 0;
+      padding: 14px 16px;
+      background: #172449;
+      color: #ffffff;
+      font-size: 16px;
+    }
+
+    .schema-row {
+      display: grid;
+      grid-template-columns: minmax(110px, 0.6fr) minmax(0, 1fr);
+      gap: 10px;
+      padding: 10px 16px;
+      border-bottom: 1px solid var(--line);
+      font-size: 13px;
+    }
+
+    .schema-row:last-child {
+      border-bottom: 0;
+    }
+
+    .schema-row strong {
+      color: var(--ink);
+    }
+
+    .schema-row span {
+      color: var(--muted);
+    }
+
+    .callout {
+      border: 1px solid var(--line);
+      border-left: 5px solid var(--teal);
+      border-radius: 8px;
+      background: var(--surface);
+      padding: 16px 18px;
+    }
+
+    .callout strong {
+      display: block;
+      margin-bottom: 5px;
+    }
+
+    .callout p {
+      margin: 0;
+      color: var(--muted);
+      font-size: 14px;
+    }
+
+    .footer {
+      border-top: 1px solid var(--line);
+      padding: 24px 0 34px;
+      color: var(--muted);
+      font-size: 13px;
+      text-align: center;
+    }
+
+    @media (max-width: 920px) {
+      .hero-grid,
+      .grid.cols-2,
+      .grid.cols-3,
+      .grid.cols-4,
+      .schema,
+      .flow-lanes {
+        grid-template-columns: 1fr;
+      }
+
+      .hero h1 {
+        font-size: 36px;
+      }
+
+      .topline {
+        align-items: flex-start;
+        flex-direction: column;
+        margin-bottom: 34px;
+      }
+
+      .hero-badges {
+        justify-content: flex-start;
+      }
+
+      .section-heading {
+        align-items: flex-start;
+        flex-direction: column;
+      }
+    }
+
+    @media (max-width: 560px) {
+      .hero {
+        padding: 24px 18px 32px;
+      }
+
+      .hero-inner,
+      .content,
+      .toc-inner {
+        width: min(100% - 24px, 1180px);
+      }
+
+      .hero h1 {
+        font-size: 30px;
+      }
+
+      .hero-lede {
+        font-size: 14px;
+      }
+
+      .card {
+        padding: 16px;
+      }
+
+      .section-heading h2 {
+        font-size: 24px;
+      }
+
+      .schema-row {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="page-shell">
+    <header class="hero" id="top">
+      <div class="hero-inner">
+        <div class="topline">
+          <a class="brand-mark" href="#top" aria-label="FinTrack documentation home">
+            <span class="brand-icon">FT</span>
+            <span class="brand-copy">
+              <strong>FinTrack</strong>
+              <span>Personal Transaction Management System</span>
+            </span>
+          </a>
+          <div class="hero-badges" aria-label="Technology stack">
+            <span>Angular Frontend</span>
+            <span>Express API</span>
+            <span>Supabase PostgreSQL</span>
+            <span>JWT Auth</span>
+          </div>
+        </div>
+
+        <div class="hero-grid">
+          <div>
+            <h1>System functionality guide for the FinTrack application.</h1>
+            <p class="hero-lede">
+              This document explains how FinTrack works from the user interface down to the backend API and database. It is designed to show the core modules, request flow, data model, and financial features implemented in the project.
+            </p>
+            <div class="hero-actions">
+              <a class="primary-link" href="#frontend">View Frontend</a>
+              <a class="secondary-link" href="#backend">View Backend</a>
+              <a class="secondary-link" href="#api">View API</a>
+            </div>
+          </div>
+
+          <aside class="system-panel" aria-label="System overview">
+            <h2>How the system works</h2>
+            <div class="system-flow">
+              <div class="flow-node">
+                <strong>1. User interacts with Angular pages</strong>
+                <span>Auth, overview, history, budgets, notifications, settings, support.</span>
+              </div>
+              <div class="flow-arrow">v</div>
+              <div class="flow-node">
+                <strong>2. ApiService sends HTTP requests</strong>
+                <span>Requests go to <code>http://localhost:3000/api</code>.</span>
+              </div>
+              <div class="flow-arrow">v</div>
+              <div class="flow-node">
+                <strong>3. Express validates and protects data</strong>
+                <span>JWT middleware protects transactions, profile, and password routes.</span>
+              </div>
+              <div class="flow-arrow">v</div>
+              <div class="flow-node">
+                <strong>4. Supabase stores persistent records</strong>
+                <span>Users and transactions are saved in PostgreSQL tables.</span>
+              </div>
+            </div>
+          </aside>
+        </div>
+      </div>
+    </header>
+
+    <nav class="toc" aria-label="Page sections">
+      <div class="toc-inner">
+        <a href="#summary">Summary</a>
+        <a href="#frontend">Frontend</a>
+        <a href="#backend">Backend</a>
+        <a href="#api">API</a>
+        <a href="#database">Database</a>
+        <a href="#flows">Core Flows</a>
+        <a href="#storage">Storage</a>
+        <a href="#run">Run</a>
+      </div>
+    </nav>
+
+    <main class="content">
+      <section class="section" id="summary">
+        <div class="section-heading">
+          <h2>Project Summary</h2>
+          <p>FinTrack is organized as a full-stack personal finance tracker. The frontend handles the user experience, the backend exposes secure endpoints, and Supabase PostgreSQL stores the main data.</p>
+        </div>
+        <div class="grid cols-4">
+          <article class="card kpi">
+            <span class="module-tag">Auth</span>
+            <h3>Secure Access</h3>
+            <p>Users register and log in as system operators. Passwords are hashed, and successful login returns a JWT session token.</p>
+          </article>
+          <article class="card kpi teal">
+            <span class="module-tag teal">Transactions</span>
+            <h3>Financial Records</h3>
+            <p>Users add income or expense records with amount, date, category, status, and description.</p>
+          </article>
+          <article class="card kpi amber">
+            <span class="module-tag amber">Budgets</span>
+            <h3>Budget Tracking</h3>
+            <p>The app compares spending against monthly and category limits, then calculates remaining budget and projected spending.</p>
+          </article>
+          <article class="card kpi rose">
+            <span class="module-tag rose">Alerts</span>
+            <h3>Notifications</h3>
+            <p>Budget and category warnings are generated when spending becomes high or exceeds configured limits.</p>
+          </article>
+        </div>
+      </section>
+
+      <section class="section" id="frontend">
+        <div class="section-heading">
+          <h2>Frontend Functionality</h2>
+          <p>The frontend is an Angular application located in <code>fin-track/</code>. It provides the full user interface and communicates with the backend through <code>ApiService</code>.</p>
+        </div>
+        <div class="grid cols-3">
+          <article class="card">
+            <h3>Auth Page</h3>
+            <p>Allows account creation and login. It handles loading states and displays validation or server errors such as invalid credentials.</p>
+            <ul>
+              <li>Route: <code>/auth</code></li>
+              <li>Uses register and login endpoints</li>
+              <li>Stores the JWT token after login</li>
+            </ul>
+          </article>
+          <article class="card">
+            <h3>Overview Dashboard</h3>
+            <p>Summarizes the selected month with income, expenses, net balance, remaining budget, savings rate, budget progress, spending by category, and recent transactions.</p>
+            <ul>
+              <li>Route: <code>/overview</code></li>
+              <li>Month selector controls reporting period</li>
+              <li>CSV report download is available</li>
+            </ul>
+          </article>
+          <article class="card">
+            <h3>History Page</h3>
+            <p>Displays all matching transactions and supports search, date-range filtering, category filtering, status filtering, type filtering, refresh, and CSV export.</p>
+            <ul>
+              <li>Route: <code>/history</code></li>
+              <li>Header search redirects here with a query</li>
+              <li>Mobile record cards use compact two-column content</li>
+            </ul>
+          </article>
+          <article class="card">
+            <h3>Budgets Page</h3>
+            <p>Calculates total monthly budget, total spent, remaining amount, daily average, projected spending, and per-category budget status.</p>
+            <ul>
+              <li>Route: <code>/budget</code></li>
+              <li>Users can add and update category limits</li>
+              <li>Users can create and fund savings goals</li>
+            </ul>
+          </article>
+          <article class="card">
+            <h3>Add Transaction Page</h3>
+            <p>Provides a form for recording a new transaction. After successful saving, the app refreshes budget notifications and returns to the overview.</p>
+            <ul>
+              <li>Route: <code>/add-transaction</code></li>
+              <li>Validates required fields</li>
+              <li>Rejects non-positive amounts</li>
+            </ul>
+          </article>
+          <article class="card">
+            <h3>Settings Page</h3>
+            <p>Lets the user update account email, upload or remove an avatar, and change the account password.</p>
+            <ul>
+              <li>Route: <code>/settings</code></li>
+              <li>Avatar preview updates the header</li>
+              <li>Password form validates confirmation</li>
+            </ul>
+          </article>
+          <article class="card">
+            <h3>Notifications Page</h3>
+            <p>Shows budget and category alerts generated from transaction and budget data. Notifications can be marked as read or cleared.</p>
+            <ul>
+              <li>Route: <code>/notifications</code></li>
+              <li>Unread count appears on the bell icon</li>
+              <li>Alerts are persisted locally</li>
+            </ul>
+          </article>
+          <article class="card">
+            <h3>Header and Sidebar</h3>
+            <p>The shared layout provides search, avatar, notification access, logout, navigation, and a responsive mobile sidebar menu.</p>
+            <ul>
+              <li>Desktop sidebar remains visible</li>
+              <li>Mobile uses a menu button and overlay</li>
+              <li>Logout is available in header and sidebar context</li>
+            </ul>
+          </article>
+          <article class="card">
+            <h3>Support Page</h3>
+            <p>Provides project support information and contact details in a responsive layout.</p>
+            <ul>
+              <li>Route: <code>/support</code></li>
+              <li>Designed as an informational page</li>
+              <li>Accessible from the sidebar footer</li>
+            </ul>
+          </article>
+        </div>
+      </section>
+
+      <section class="section" id="backend">
+        <div class="section-heading">
+          <h2>Backend Functionality</h2>
+          <p>The backend is an Express server located in <code>fin-track-backend/</code>. It manages authentication, database access, API routes, and server-side validation.</p>
+        </div>
+        <div class="grid cols-2">
+          <article class="card">
+            <h3>Express Server</h3>
+            <p>The server starts from <code>server.js</code> and listens on <code>PORT</code> or <code>3000</code> by default.</p>
+            <pre><code>npm run dev
+http://localhost:3000</code></pre>
+          </article>
+          <article class="card">
+            <h3>CORS Protection</h3>
+            <p>The server accepts local Angular development origins such as <code>localhost:4200</code>, <code>127.0.0.1:4200</code>, and similar ports in the <code>4200</code> range.</p>
+          </article>
+          <article class="card">
+            <h3>Authentication Middleware</h3>
+            <p>Protected routes use <code>authenticateToken</code>. It reads the bearer token from the request header and rejects missing or expired sessions.</p>
+          </article>
+          <article class="card">
+            <h3>Database Initialization</h3>
+            <p>On startup, <code>ensureDatabase()</code> creates required tables if they are missing. This makes first setup easier after connecting Supabase.</p>
+          </article>
+        </div>
+      </section>
+
+      <section class="section" id="api">
+        <div class="section-heading">
+          <h2>API Endpoints</h2>
+          <p>The API base URL used by the frontend is <code>http://localhost:3000/api</code>. Protected routes require an <code>Authorization: Bearer token</code> header.</p>
+        </div>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>Method</th>
+                <th>Endpoint</th>
+                <th>Authentication</th>
+                <th>Purpose</th>
+                <th>Main Response</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><code>GET</code></td>
+                <td><code>/</code></td>
+                <td>No</td>
+                <td>Checks whether the API is running.</td>
+                <td>API name, database type, and status.</td>
+              </tr>
+              <tr>
+                <td><code>POST</code></td>
+                <td><code>/api/auth/register</code></td>
+                <td>No</td>
+                <td>Creates a system operator account.</td>
+                <td>Created user data or duplicate account error.</td>
+              </tr>
+              <tr>
+                <td><code>POST</code></td>
+                <td><code>/api/auth/login</code></td>
+                <td>No</td>
+                <td>Authenticates a user by username and password.</td>
+                <td>JWT token and user profile data.</td>
+              </tr>
+              <tr>
+                <td><code>GET</code></td>
+                <td><code>/api/auth/me</code></td>
+                <td>Yes</td>
+                <td>Loads the current logged-in user.</td>
+                <td>User id, username, email, and avatar.</td>
+              </tr>
+              <tr>
+                <td><code>PATCH</code></td>
+                <td><code>/api/auth/profile</code></td>
+                <td>Yes</td>
+                <td>Updates email and avatar.</td>
+                <td>Updated profile data.</td>
+              </tr>
+              <tr>
+                <td><code>PATCH</code></td>
+                <td><code>/api/auth/password</code></td>
+                <td>Yes</td>
+                <td>Changes the logged-in user's password.</td>
+                <td>Password update confirmation.</td>
+              </tr>
+              <tr>
+                <td><code>GET</code></td>
+                <td><code>/api/transactions</code></td>
+                <td>Yes</td>
+                <td>Lists all transactions for the current user.</td>
+                <td>Array of normalized transactions.</td>
+              </tr>
+              <tr>
+                <td><code>POST</code></td>
+                <td><code>/api/transactions</code></td>
+                <td>Yes</td>
+                <td>Creates a new income or expense record.</td>
+                <td>Created transaction data.</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <section class="section" id="database">
+        <div class="section-heading">
+          <h2>Database Design</h2>
+          <p>The backend uses Supabase PostgreSQL through the <code>pg</code> package. The connection is configured in <code>fin-track-backend/db.js</code>.</p>
+        </div>
+        <div class="schema">
+          <article class="schema-table">
+            <h3>system_operators</h3>
+            <div class="schema-row"><strong>id</strong><span>Primary key. Unique identifier for the user.</span></div>
+            <div class="schema-row"><strong>username</strong><span>Unique login name, stored in lowercase.</span></div>
+            <div class="schema-row"><strong>email</strong><span>Unique email address connected to the account.</span></div>
+            <div class="schema-row"><strong>password</strong><span>Hashed password generated with bcrypt.</span></div>
+            <div class="schema-row"><strong>profile_avatar</strong><span>Optional image stored as a Data URL text value.</span></div>
+            <div class="schema-row"><strong>created_at</strong><span>Timestamp for account creation.</span></div>
+          </article>
+          <article class="schema-table">
+            <h3>transactions</h3>
+            <div class="schema-row"><strong>id</strong><span>Primary key. Unique transaction id.</span></div>
+            <div class="schema-row"><strong>user_id</strong><span>References the owner in <code>system_operators</code>.</span></div>
+            <div class="schema-row"><strong>description</strong><span>Short transaction label entered by the user.</span></div>
+            <div class="schema-row"><strong>category</strong><span>Budget or spending category.</span></div>
+            <div class="schema-row"><strong>date</strong><span>Date used for monthly reports and filtering.</span></div>
+            <div class="schema-row"><strong>amount</strong><span>Positive numeric amount.</span></div>
+            <div class="schema-row"><strong>type</strong><span>Either <code>income</code> or <code>expense</code>.</span></div>
+            <div class="schema-row"><strong>status</strong><span>Transaction status, defaulting to <code>Completed</code>.</span></div>
+          </article>
+        </div>
+      </section>
+
+      <section class="section" id="flows">
+        <div class="section-heading">
+          <h2>Core Application Flows</h2>
+          <p>These flows describe how the main features work across the frontend, API, backend, and database.</p>
+        </div>
+        <div class="flow-lanes">
+          <article class="lane">
+            <h3>Authentication Flow</h3>
+            <ol>
+              <li>User enters username and password on the auth page.</li>
+              <li>Angular sends credentials to the login endpoint.</li>
+              <li>Express finds the user and compares the bcrypt hash.</li>
+              <li>Backend returns a JWT token and user profile.</li>
+              <li>Frontend stores token and user data in local storage.</li>
+            </ol>
+          </article>
+          <article class="lane">
+            <h3>Transaction Flow</h3>
+            <ol>
+              <li>User submits a transaction form.</li>
+              <li>Angular validates required fields and amount.</li>
+              <li>API receives a protected request with the JWT token.</li>
+              <li>Express validates type and amount.</li>
+              <li>PostgreSQL stores the transaction for that user.</li>
+            </ol>
+          </article>
+          <article class="lane">
+            <h3>Budget Flow</h3>
+            <ol>
+              <li>Budget page loads transactions from the API.</li>
+              <li>Frontend filters records by selected month.</li>
+              <li>Expense totals are grouped by category.</li>
+              <li>Local category limits are applied.</li>
+              <li>UI displays status, progress, and remaining budget.</li>
+            </ol>
+          </article>
+          <article class="lane">
+            <h3>Notification Flow</h3>
+            <ol>
+              <li>Transactions and budget limits are inspected.</li>
+              <li>Budget usage and category usage are calculated.</li>
+              <li>Alerts are generated for high or exceeded spending.</li>
+              <li>Unread count updates the notification bell.</li>
+              <li>Notifications can be read or cleared.</li>
+            </ol>
+          </article>
+        </div>
+      </section>
+
+      <section class="section" id="storage">
+        <div class="section-heading">
+          <h2>Client Storage and Persistence</h2>
+          <p>FinTrack uses Supabase for persistent server data and local storage for frontend-only state that is not yet saved in the backend.</p>
+        </div>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>Storage Area</th>
+                <th>Key or Table</th>
+                <th>Purpose</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>Supabase PostgreSQL</td>
+                <td><code>system_operators</code></td>
+                <td>User accounts, hashed passwords, emails, and avatar Data URLs.</td>
+              </tr>
+              <tr>
+                <td>Supabase PostgreSQL</td>
+                <td><code>transactions</code></td>
+                <td>Income and expense records owned by each logged-in user.</td>
+              </tr>
+              <tr>
+                <td>Local storage</td>
+                <td><code>fintrack_token</code></td>
+                <td>JWT token used by the frontend for authenticated API requests.</td>
+              </tr>
+              <tr>
+                <td>Local storage</td>
+                <td><code>fintrack_user</code></td>
+                <td>Cached user profile used by the header and settings page.</td>
+              </tr>
+              <tr>
+                <td>Local storage</td>
+                <td><code>fintrack_budget_limits</code></td>
+                <td>Editable category budget limits.</td>
+              </tr>
+              <tr>
+                <td>Local storage</td>
+                <td><code>fintrack_savings_goals</code></td>
+                <td>Savings goals, target amounts, saved amounts, and monthly plans.</td>
+              </tr>
+              <tr>
+                <td>Local storage</td>
+                <td><code>fintrack_notifications</code></td>
+                <td>Generated budget alerts and read/unread status.</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <section class="section" id="run">
+        <div class="section-heading">
+          <h2>How to Run the Project</h2>
+          <p>Run the backend and frontend in two separate terminals. The backend must be connected to Supabase before the frontend can register, log in, or save records.</p>
+        </div>
+        <div class="grid cols-2">
+          <article class="card">
+            <h3>Backend</h3>
+            <p>Install dependencies, configure the environment file, and start the Express API.</p>
+            <pre><code>cd fin-track-backend
+copy .env.example .env
+npm install
+npm run dev</code></pre>
+          </article>
+          <article class="card">
+            <h3>Frontend</h3>
+            <p>Install dependencies and start the Angular development server.</p>
+            <pre><code>cd fin-track
+npm install
+npm start</code></pre>
+          </article>
+        </div>
+        <div class="callout" style="margin-top: 16px;">
+          <strong>Important local URLs</strong>
+          <p>Backend: <code>http://localhost:3000</code>. Frontend: <code>http://localhost:4200</code>. API base in the Angular service: <code>http://localhost:3000/api</code>.</p>
+        </div>
+      </section>
+
+      <section class="section">
+        <div class="section-heading">
+          <h2>Implementation Notes</h2>
+          <p>These notes explain the most important design choices in the current version of the application.</p>
+        </div>
+        <div class="grid cols-3">
+          <article class="card">
+            <h3>Security</h3>
+            <p>Passwords are never stored as plain text. The backend hashes them with bcrypt, then uses JWT tokens for authenticated API access.</p>
+          </article>
+          <article class="card">
+            <h3>Responsiveness</h3>
+            <p>The application uses a desktop sidebar and a mobile slide-in menu. Mobile pages reduce text sizes and card spacing to fit narrow screens.</p>
+          </article>
+          <article class="card">
+            <h3>Reports</h3>
+            <p>The overview, history, and budget pages can export CSV files so users can keep offline financial records.</p>
+          </article>
+        </div>
+      </section>
+    </main>
+
+    <footer class="footer">
+      <div class="content" style="padding: 0;">
+        FinTrack System Documentation. Generated for the personal transaction tracking project.
+      </div>
+    </footer>
+  </div>
+</body>
+</html>

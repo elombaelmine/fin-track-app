@@ -1,10 +1,12 @@
 import express from 'express';
+import { createServer } from 'node:http';
 import cors from 'cors';
 import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
 import pool from './db.js';
 
 const app = express();
+const server = createServer(app);
 const PORT = process.env.PORT || 3000;
 const JWT_SECRET = process.env.JWT_SECRET || 'FINTRACK_SUPER_SECRET_KEY_2026';
 const allowedOrigins = new Set([
@@ -14,7 +16,8 @@ const allowedOrigins = new Set([
   'http://127.0.0.1:4201',
   'http://localhost:4202',
   'http://127.0.0.1:4202',
-  process.env.CLIENT_ORIGIN
+  process.env.CLIENT_ORIGIN,
+  process.env.CLIENT_PROD
 ].filter(Boolean));
 
 function isAllowedOrigin(origin) {
@@ -23,6 +26,19 @@ function isAllowedOrigin(origin) {
   }
 
   return /^http:\/\/(localhost|127\.0\.0\.1):42\d{2}$/.test(origin);
+}
+
+let databaseStatus = {
+  ready: false,
+  message: 'Database initialization pending.'
+};
+
+function requireDatabase(req, res, next) {
+  if (!databaseStatus.ready) {
+    return res.status(503).json({ message: databaseStatus.message });
+  }
+
+  return next();
 }
 
 app.use(express.json({ limit: '2mb' }));
@@ -38,6 +54,10 @@ app.use(cors({
 }));
 
 async function ensureDatabase() {
+  if (!pool) {
+    throw new Error('DATABASE_URL is missing. Add your Supabase PostgreSQL connection string to .env.');
+  }
+
   await pool.query(`
     CREATE TABLE IF NOT EXISTS system_operators (
       id BIGSERIAL PRIMARY KEY,
@@ -114,9 +134,21 @@ app.get('/', (req, res) => {
   res.status(200).json({
     name: 'FinTrack API',
     database: 'Supabase PostgreSQL',
+    databaseReady: databaseStatus.ready,
+    databaseMessage: databaseStatus.message,
     status: 'running'
   });
 });
+
+app.get('/api/health', (req, res) => {
+  res.status(databaseStatus.ready ? 200 : 503).json({
+    status: 'running',
+    databaseReady: databaseStatus.ready,
+    databaseMessage: databaseStatus.message
+  });
+});
+
+app.use('/api', requireDatabase);
 
 app.post('/api/auth/register', async (req, res) => {
   try {
@@ -355,13 +387,63 @@ app.post('/api/transactions', authenticateToken, async (req, res) => {
   }
 });
 
-ensureDatabase()
-  .then(() => {
-    app.listen(PORT, () => {
-      console.log(`FinTrack API running on http://localhost:${PORT}`);
-    });
-  })
-  .catch((error) => {
-    console.error('Database initialization failed:', error);
-    process.exit(1);
+server.on('close', () => {
+  console.log('HTTP server closed.');
+});
+
+function startServer() {
+  return new Promise((resolve, reject) => {
+    function handleStartupError(error) {
+      server.off('listening', handleListening);
+      reject(error);
+    }
+
+    function handleListening() {
+      server.off('error', handleStartupError);
+      resolve();
+    }
+
+    server.once('error', handleStartupError);
+    server.once('listening', handleListening);
+    server.listen(PORT);
   });
+}
+
+function showServerStartupError(error) {
+  if (error?.code === 'EADDRINUSE') {
+    console.error(`Port ${PORT} is already in use. Stop the other server or set PORT to another value in .env.`);
+    return;
+  }
+
+  console.error('HTTP server failed:', error);
+}
+
+async function startApp() {
+  try {
+    await startServer();
+    console.log(`FinTrack API running on http://localhost:${PORT}`);
+  } catch (error) {
+    showServerStartupError(error);
+    process.exit(1);
+  }
+
+  try {
+    await ensureDatabase();
+    databaseStatus = {
+      ready: true,
+      message: 'Database connected.'
+    };
+    console.log('Database initialized successfully.');
+  } catch (error) {
+    databaseStatus = {
+      ready: false,
+      message: 'Database is unavailable. Check DATABASE_URL and network access.'
+    };
+    console.error(
+      'Database initialization failed. API routes will return 503 until the server is restarted after fixing the database connection:',
+      error
+    );
+  }
+}
+
+startApp();

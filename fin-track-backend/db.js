@@ -4,13 +4,19 @@ dotenv.config();
 
 const { Pool } = pg;
 
-if (!process.env.DATABASE_URL) {
-  throw new Error('DATABASE_URL is missing. Add your Supabase PostgreSQL connection string to .env.');
-}
+const pool = process.env.DATABASE_URL
+  ? new Pool({
+      connectionString: process.env.DATABASE_URL,
+      ssl: { rejectUnauthorized: false },
+      max: 5,
+      idleTimeoutMillis: 30000,
+      connectionTimeoutMillis: 10000,
+    })
+  : null;
 
-const pool = new Pool({
-  connectionString: process.env.DATABASE_URL,
-  ssl: { rejectUnauthorized: false }
+// Prevent unhandled 'error' events from terminated idle clients crashing Node
+pool?.on('error', (err) => {
+  console.error('Unexpected pool client error:', err.message);
 });
 
 export default pool;
