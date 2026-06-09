@@ -4,6 +4,7 @@ import { FormsModule } from '@angular/forms';
 import { finalize, timeout } from 'rxjs';
 import { ApiService } from '../../api.service';
 import { NotificationService } from '../../notification.service';
+import { BudgetService } from '../../budget.service';
 
 interface Transaction {
   date: string;
@@ -17,6 +18,8 @@ interface Transaction {
 interface BudgetCategory {
   name: string;
   spent: number;
+  credited: number;
+  available: number;
   limit: number;
   percentage: number;
   rawPercentage: number;
@@ -41,15 +44,7 @@ interface SavingsGoal {
   styleUrls: ['./budget.css']
 })
 export class Budget implements OnInit {
-  private readonly budgetStorageKey = 'fintrack_budget_limits';
   private readonly goalsStorageKey = 'fintrack_savings_goals';
-  private readonly defaultBudgetLimits: Record<string, number> = {
-    Housing: 150000,
-    Food: 100000,
-    Transport: 70000,
-    Entertainment: 60000,
-    Shopping: 80000
-  };
 
   private allTransactions: Transaction[] = [];
   private budgetLimits: Record<string, number> = {};
@@ -60,6 +55,10 @@ export class Budget implements OnInit {
   savingsGoals: SavingsGoal[] = [];
 
   totalMonthlyBudget = 0;
+  monthlyBudgetLimit = 0;
+  draftMonthlyBudgetLimit: number | null = null;
+  allocatedBudgetTotal = 0;
+  unallocatedBudget = 0;
   totalSpent = 0;
   totalRemaining = 0;
   daysLeft = 0;
@@ -79,6 +78,7 @@ export class Budget implements OnInit {
   constructor(
     private apiService: ApiService,
     private notificationService: NotificationService,
+    private budgetService: BudgetService,
     @Inject(PLATFORM_ID) private platformId: Object,
     private cdr: ChangeDetectorRef
   ) {}
@@ -86,7 +86,7 @@ export class Budget implements OnInit {
   ngOnInit(): void {
     if (isPlatformBrowser(this.platformId)) {
       this.setCurrentMonth();
-      this.loadSavedBudgetLimits();
+      this.loadSavedBudgetConfig();
       this.loadSavedGoals();
       this.loadBudgetData();
     }
@@ -134,8 +134,44 @@ export class Budget implements OnInit {
 
   saveCategoryLimit(category: BudgetCategory): void {
     const cleanLimit = Math.max(0, Number(category.limit) || 0);
-    this.budgetLimits[category.name] = cleanLimit;
+    const previousLimit = this.budgetLimits[category.name] || 0;
+    const nextLimits = {
+      ...this.budgetLimits,
+      [category.name]: cleanLimit
+    };
+
+    if (!this.canSaveCategoryLimits(nextLimits)) {
+      category.limit = previousLimit;
+      this.refreshView();
+      return;
+    }
+
+    this.budgetLimits = nextLimits;
     this.persistBudgetLimits();
+    this.budgetError = '';
+    this.recalculateBudgets();
+  }
+
+  saveMonthlyBudgetLimit(): void {
+    const cleanLimit = Math.max(0, Number(this.draftMonthlyBudgetLimit) || 0);
+
+    if (cleanLimit <= 0) {
+      this.budgetError = 'Enter a monthly budget limit greater than zero.';
+      this.refreshView();
+      return;
+    }
+
+    if (cleanLimit < this.allocatedBudgetTotal) {
+      this.budgetError = `Your category budgets already total ${this.formatCurrency(this.allocatedBudgetTotal)}. Set a monthly limit at least that high, or reduce some category limits first.`;
+      this.draftMonthlyBudgetLimit = this.monthlyBudgetLimit;
+      this.refreshView();
+      return;
+    }
+
+    this.monthlyBudgetLimit = cleanLimit;
+    this.totalMonthlyBudget = cleanLimit;
+    this.budgetService.saveMonthlyBudgetLimit(cleanLimit);
+    this.budgetError = '';
     this.recalculateBudgets();
   }
 
@@ -149,7 +185,17 @@ export class Budget implements OnInit {
       return;
     }
 
-    this.budgetLimits[name] = limit;
+    const nextLimits = {
+      ...this.budgetLimits,
+      [name]: limit
+    };
+
+    if (!this.canSaveCategoryLimits(nextLimits)) {
+      this.refreshView();
+      return;
+    }
+
+    this.budgetLimits = nextLimits;
     this.persistBudgetLimits();
     this.newCategoryName = '';
     this.newCategoryLimit = null;
@@ -294,7 +340,19 @@ export class Budget implements OnInit {
 
   private recalculateBudgets(): void {
     const expenses = this.selectedMonthTransactions.filter(tx => tx.type === 'expense');
+    const creditedByCategory = new Map<string, number>();
     const spentByCategory = new Map<string, number>();
+
+    this.selectedMonthTransactions
+      .filter(tx => tx.type === 'income')
+      .forEach(tx => {
+        const amount = Number(tx.amount) || 0;
+        const category = tx.category?.trim() || '';
+
+        if (category && this.budgetLimits[category] !== undefined) {
+          creditedByCategory.set(category, (creditedByCategory.get(category) || 0) + amount);
+        }
+      });
 
     expenses.forEach(tx => {
       const amount = Number(tx.amount) || 0;
@@ -308,29 +366,36 @@ export class Budget implements OnInit {
 
     const categoryNames = Array.from(new Set([
       ...Object.keys(this.budgetLimits),
-      ...Array.from(spentByCategory.keys())
+      ...Array.from(spentByCategory.keys()),
+      ...Array.from(creditedByCategory.keys())
     ])).sort((a, b) => a.localeCompare(b));
 
     this.categoryBudgets = categoryNames.map(name => {
       const spent = spentByCategory.get(name) || 0;
+      const credited = creditedByCategory.get(name) || 0;
       const limit = this.budgetLimits[name] ?? 0;
-      const rawPercentage = limit > 0 ? Math.round((spent / limit) * 100) : spent > 0 ? 100 : 0;
-      const status = this.getCategoryStatus(rawPercentage, spent, limit);
+      const available = limit + credited;
+      const rawPercentage = available > 0 ? Math.round((spent / available) * 100) : spent > 0 ? 100 : 0;
+      const status = this.getCategoryStatus(rawPercentage, spent, available);
 
       return {
         name,
         spent,
+        credited,
+        available,
         limit,
         rawPercentage,
         percentage: Math.min(100, rawPercentage),
-        remaining: limit - spent,
+        remaining: available - spent,
         status
       };
     });
 
-    this.totalMonthlyBudget = this.categoryBudgets.reduce((sum, category) => sum + category.limit, 0);
+    this.allocatedBudgetTotal = this.budgetService.getCategoryLimitTotal(this.budgetLimits);
+    this.totalMonthlyBudget = this.monthlyBudgetLimit;
     this.totalSpent = expenses.reduce((sum, tx) => sum + (Number(tx.amount) || 0), 0);
     this.totalRemaining = this.totalMonthlyBudget - this.totalSpent;
+    this.unallocatedBudget = this.totalMonthlyBudget - this.allocatedBudgetTotal;
     this.updateCalendarMetrics();
     this.notificationService.syncBudgetNotifications(this.allTransactions);
   }
@@ -361,27 +426,13 @@ export class Budget implements OnInit {
     return 'On Track';
   }
 
-  private loadSavedBudgetLimits(): void {
-    this.budgetLimits = { ...this.defaultBudgetLimits };
-
-    try {
-      const savedLimits = localStorage.getItem(this.budgetStorageKey);
-      if (!savedLimits) {
-        return;
-      }
-
-      const parsedLimits = JSON.parse(savedLimits) as Record<string, number>;
-      Object.entries(parsedLimits).forEach(([name, limit]) => {
-        const cleanName = name.trim();
-        const cleanLimit = Math.max(0, Number(limit) || 0);
-
-        if (cleanName) {
-          this.budgetLimits[cleanName] = cleanLimit;
-        }
-      });
-    } catch {
-      this.budgetLimits = { ...this.defaultBudgetLimits };
-    }
+  private loadSavedBudgetConfig(): void {
+    const config = this.budgetService.getBudgetConfig();
+    this.budgetLimits = config.categoryLimits;
+    this.monthlyBudgetLimit = config.monthlyLimit;
+    this.draftMonthlyBudgetLimit = config.monthlyLimit;
+    this.allocatedBudgetTotal = this.budgetService.getCategoryLimitTotal(this.budgetLimits);
+    this.totalMonthlyBudget = config.monthlyLimit;
   }
 
   private persistBudgetLimits(): void {
@@ -389,7 +440,18 @@ export class Budget implements OnInit {
       return;
     }
 
-    localStorage.setItem(this.budgetStorageKey, JSON.stringify(this.budgetLimits));
+    this.budgetService.saveCategoryLimits(this.budgetLimits);
+  }
+
+  private canSaveCategoryLimits(nextLimits: Record<string, number>): boolean {
+    const allocatedTotal = this.budgetService.getCategoryLimitTotal(nextLimits);
+
+    if (allocatedTotal > this.monthlyBudgetLimit) {
+      this.budgetError = `Category budgets cannot exceed your monthly limit. You have ${this.formatCurrency(Math.max(0, this.monthlyBudgetLimit - this.allocatedBudgetTotal))} left to allocate.`;
+      return false;
+    }
+
+    return true;
   }
 
   private loadSavedGoals(): void {
@@ -474,13 +536,21 @@ export class Budget implements OnInit {
     return `"${value.replace(/"/g, '""')}"`;
   }
 
+  private formatCurrency(amount: number): string {
+    return new Intl.NumberFormat('en-US', {
+      style: 'currency',
+      currency: 'XAF',
+      maximumFractionDigits: 0
+    }).format(amount);
+  }
+
   private getBudgetErrorMessage(err: any): string {
     if (err?.name === 'TimeoutError') {
-      return 'The server is taking too long to respond. Try refreshing again.';
+      return 'This is taking longer than expected. Try refreshing again.';
     }
 
     if (err?.status === 0) {
-      return 'Cannot reach the server. Make sure the backend is running on http://localhost:3000.';
+      return 'We cannot connect right now. The server may be down or still starting.';
     }
 
     return err?.error?.message || 'Could not load budget data right now.';

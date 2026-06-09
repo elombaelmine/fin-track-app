@@ -32,7 +32,9 @@
     <div class="account-cluster">
       <div class="user-avatar-placeholder">
         <img *ngIf="profileAvatar" [src]="profileAvatar" alt="Profile avatar" />
-        <span *ngIf="!profileAvatar">{{ displayUsername.charAt(0).toUpperCase() }}</span>
+        <span *ngIf="!profileAvatar" class="material-symbols-outlined default-profile-icon" aria-hidden="true">
+          account_circle
+        </span>
       </div>
 
       <div class="user-meta-info">

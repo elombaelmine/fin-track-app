@@ -77,28 +77,50 @@
       </div>
     </div>
 
-    <form class="add-budget-card" (ngSubmit)="addCategory()">
-      <h2>Add Category</h2>
-      <label for="category-name">Category</label>
-      <input
-        id="category-name"
-        name="categoryName"
-        type="text"
-        [(ngModel)]="newCategoryName"
-        placeholder="Utilities" />
+    <div class="budget-tools-stack">
+      <form class="budget-limit-card" (ngSubmit)="saveMonthlyBudgetLimit()">
+        <h2>Monthly Limit</h2>
+        <label for="monthly-budget-limit">Limit Amount</label>
+        <input
+          id="monthly-budget-limit"
+          name="monthlyBudgetLimit"
+          type="number"
+          min="0"
+          step="1000"
+          [(ngModel)]="draftMonthlyBudgetLimit"
+          placeholder="500000" />
 
-      <label for="category-limit">Monthly Limit</label>
-      <input
-        id="category-limit"
-        name="categoryLimit"
-        type="number"
-        min="0"
-        step="1000"
-        [(ngModel)]="newCategoryLimit"
-        placeholder="50000" />
+        <div class="limit-summary">
+          <span>Allocated: <strong>{{ allocatedBudgetTotal | currency:'XAF':'symbol':'1.0-0' }}</strong></span>
+          <span>Available: <strong [ngClass]="{'negative-text': unallocatedBudget < 0}">{{ unallocatedBudget | currency:'XAF':'symbol':'1.0-0' }}</strong></span>
+        </div>
 
-      <button class="btn-primary" type="submit">Add Budget</button>
-    </form>
+        <button class="btn-primary" type="submit">Save Limit</button>
+      </form>
+
+      <form class="add-budget-card" (ngSubmit)="addCategory()">
+        <h2>Add Category</h2>
+        <label for="category-name">Category</label>
+        <input
+          id="category-name"
+          name="categoryName"
+          type="text"
+          [(ngModel)]="newCategoryName"
+          placeholder="Utilities" />
+
+        <label for="category-limit">Monthly Limit</label>
+        <input
+          id="category-limit"
+          name="categoryLimit"
+          type="number"
+          min="0"
+          step="1000"
+          [(ngModel)]="newCategoryLimit"
+          placeholder="50000" />
+
+        <button class="btn-primary" type="submit">Add Budget</button>
+      </form>
+    </div>
   </div>
 
   <div class="section-block">
@@ -124,6 +146,10 @@
           <div>
             <span>Spent</span>
             <strong>{{ category.spent | currency:'XAF':'symbol':'1.0-0' }}</strong>
+          </div>
+          <div *ngIf="category.credited > 0">
+            <span>Added</span>
+            <strong>{{ category.credited | currency:'XAF':'symbol':'1.0-0' }}</strong>
           </div>
           <div>
             <span>Remaining</span>

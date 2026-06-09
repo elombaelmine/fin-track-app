@@ -8,7 +8,7 @@ import pool from './db.js';
 const app = express();
 const server = createServer(app);
 const PORT = process.env.PORT || 3000;
-const JWT_SECRET = process.env.JWT_SECRET || 'FINTRACK_SUPER_SECRET_KEY_2026';
+const JWT_SECRET = process.env.JWT_SECRET || (process.env.NODE_ENV === 'production' ? '' : 'FINTRACK_SUPER_SECRET_KEY_2026');
 const allowedOrigins = new Set([
   'http://localhost:4200',
   'http://127.0.0.1:4200',
@@ -20,6 +20,10 @@ const allowedOrigins = new Set([
   process.env.CLIENT_PROD
 ].filter(Boolean));
 
+if (!JWT_SECRET) {
+  throw new Error('JWT_SECRET is required in production.');
+}
+
 function isAllowedOrigin(origin) {
   if (!origin || allowedOrigins.has(origin)) {
     return true;
@@ -30,7 +34,7 @@ function isAllowedOrigin(origin) {
 
 let databaseStatus = {
   ready: false,
-  message: 'Database initialization pending.'
+  message: 'The service is still getting ready. Please try again in a moment.'
 };
 
 function requireDatabase(req, res, next) {
@@ -431,13 +435,13 @@ async function startApp() {
     await ensureDatabase();
     databaseStatus = {
       ready: true,
-      message: 'Database connected.'
+      message: 'The service is ready.'
     };
     console.log('Database initialized successfully.');
   } catch (error) {
     databaseStatus = {
       ready: false,
-      message: 'Database is unavailable. Check DATABASE_URL and network access.'
+      message: 'The service is temporarily unavailable. Please try again in a moment.'
     };
     console.error(
       'Database initialization failed. API routes will return 503 until the server is restarted after fixing the database connection:',

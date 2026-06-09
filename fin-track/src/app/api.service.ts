@@ -9,11 +9,19 @@ export interface FinTrackUser {
   profileAvatar?: string | null;
 }
 
+declare global {
+  interface Window {
+    finTrackConfig?: {
+      apiBaseUrl?: string;
+    };
+  }
+}
+
 @Injectable({
   providedIn: 'root'
 })
 export class ApiService {
-  private apiUrl = 'http://localhost:3000/api';
+  private apiUrl = this.resolveApiUrl();
   private currentUserSubject = new BehaviorSubject<FinTrackUser | null>(this.getStoredUser());
 
   constructor(private http: HttpClient) {}
@@ -119,5 +127,22 @@ export class ApiService {
     } catch {
       return null;
     }
+  }
+
+  private resolveApiUrl(): string {
+    if (typeof window === 'undefined') {
+      return 'http://localhost:3000/api';
+    }
+
+    const configuredUrl = window.finTrackConfig?.apiBaseUrl?.trim();
+    if (configuredUrl) {
+      return configuredUrl.replace(/\/+$/, '');
+    }
+
+    if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
+      return 'http://localhost:3000/api';
+    }
+
+    return `${window.location.origin}/api`;
   }
 }

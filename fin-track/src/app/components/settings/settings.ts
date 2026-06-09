@@ -199,11 +199,11 @@ export class Settings implements OnInit {
 
   private getErrorMessage(err: any, fallback: string): string {
     if (err?.name === 'TimeoutError') {
-      return 'The server is taking too long to respond. Try again.';
+      return 'This is taking longer than expected. Please try again.';
     }
 
     if (err?.status === 0) {
-      return 'Cannot reach the server. Make sure the backend is running on http://localhost:3000.';
+      return 'We cannot connect right now. The server may be down or still starting.';
     }
 
     return err?.error?.message || err?.error?.error || fallback;

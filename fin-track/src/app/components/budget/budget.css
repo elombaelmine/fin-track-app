@@ -104,6 +104,7 @@ button:disabled {
 
 .metric-card,
 .overview-card,
+.budget-limit-card,
 .add-budget-card,
 .category-card,
 .goal-row-card,
@@ -147,8 +148,15 @@ button:disabled {
 }
 
 .overview-card,
+.budget-limit-card,
 .add-budget-card {
   padding: 24px;
+}
+
+.budget-tools-stack {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
 }
 
 .card-title-row,
@@ -163,6 +171,7 @@ button:disabled {
 }
 
 .card-title-row h2,
+.budget-limit-card h2,
 .add-budget-card h2,
 .section-title h2,
 .card-header h3,
@@ -271,12 +280,14 @@ button:disabled {
   text-transform: uppercase;
 }
 
+.budget-limit-card,
 .add-budget-card {
   display: flex;
   flex-direction: column;
   gap: 10px;
 }
 
+.budget-limit-card label,
 .add-budget-card label,
 .limit-editor label {
   color: #0f172a;
@@ -285,6 +296,7 @@ button:disabled {
   text-transform: uppercase;
 }
 
+.budget-limit-card input,
 .add-budget-card input,
 .limit-editor input,
 .goal-actions input {
@@ -294,6 +306,29 @@ button:disabled {
   padding: 0 12px;
   background: #fff;
   color: #0f172a;
+}
+
+.limit-summary {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 8px;
+}
+
+.limit-summary span {
+  background: #f8fafc;
+  border-radius: 8px;
+  color: #526681;
+  font-size: 12px;
+  font-weight: 800;
+  padding: 10px;
+  text-transform: uppercase;
+}
+
+.limit-summary strong {
+  color: #0f172a;
+  display: block;
+  font-size: 14px;
+  margin-top: 3px;
 }
 
 .section-block {
@@ -526,7 +561,8 @@ button:disabled {
   .summary-grid,
   .categories-grid,
   .mini-metrics,
-  .category-amounts {
+  .category-amounts,
+  .limit-summary {
     grid-template-columns: 1fr;
   }
 
@@ -545,6 +581,7 @@ button:disabled {
 
   .metric-card,
   .overview-card,
+  .budget-limit-card,
   .add-budget-card,
   .category-card,
   .goal-row-card,
@@ -562,6 +599,7 @@ button:disabled {
   }
 
   .card-title-row h2,
+  .budget-limit-card h2,
   .add-budget-card h2,
   .section-title h2 {
     font-size: 18px;

@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { BehaviorSubject, catchError, of, timeout } from 'rxjs';
 import { ApiService } from './api.service';
+import { BudgetService } from './budget.service';
 
 export type NotificationSeverity = 'info' | 'warning' | 'danger';
 
@@ -28,14 +29,6 @@ interface NotificationTransaction {
 })
 export class NotificationService {
   private readonly storageKey = 'fintrack_notifications';
-  private readonly budgetStorageKey = 'fintrack_budget_limits';
-  private readonly defaultBudgetLimits: Record<string, number> = {
-    Housing: 150000,
-    Food: 100000,
-    Transport: 70000,
-    Entertainment: 60000,
-    Shopping: 80000
-  };
 
   private notificationsSubject = new BehaviorSubject<FinTrackNotification[]>(this.loadNotifications());
   private unreadCountSubject = new BehaviorSubject<number>(this.countUnread(this.notificationsSubject.value));
@@ -43,7 +36,10 @@ export class NotificationService {
   notifications$ = this.notificationsSubject.asObservable();
   unreadCount$ = this.unreadCountSubject.asObservable();
 
-  constructor(private apiService: ApiService) {}
+  constructor(
+    private apiService: ApiService,
+    private budgetService: BudgetService
+  ) {}
 
   refreshBudgetNotifications(): void {
     this.apiService.getTransactions().pipe(
@@ -63,8 +59,9 @@ export class NotificationService {
     const currentMonthExpenses = transactions.filter(tx => {
       return tx.type === 'expense' && this.isInMonth(tx.date, currentMonthKey);
     });
-    const budgetLimits = this.loadBudgetLimits();
-    const totalBudget = Object.values(budgetLimits).reduce((sum, limit) => sum + limit, 0);
+    const budgetConfig = this.budgetService.getBudgetConfig();
+    const budgetLimits = budgetConfig.categoryLimits;
+    const totalBudget = budgetConfig.monthlyLimit;
     const totalSpent = currentMonthExpenses.reduce((sum, tx) => sum + (Number(tx.amount) || 0), 0);
     const alerts: Omit<FinTrackNotification, 'read' | 'createdAt'>[] = [];
 
@@ -211,31 +208,6 @@ export class NotificationService {
     }
 
     localStorage.setItem(this.storageKey, JSON.stringify(notifications));
-  }
-
-  private loadBudgetLimits(): Record<string, number> {
-    const budgetLimits = { ...this.defaultBudgetLimits };
-
-    try {
-      const savedLimits = localStorage.getItem(this.budgetStorageKey);
-      if (!savedLimits) {
-        return budgetLimits;
-      }
-
-      const parsedLimits = JSON.parse(savedLimits) as Record<string, number>;
-      Object.entries(parsedLimits).forEach(([category, limit]) => {
-        const cleanCategory = category.trim();
-        const cleanLimit = Math.max(0, Number(limit) || 0);
-
-        if (cleanCategory) {
-          budgetLimits[cleanCategory] = cleanLimit;
-        }
-      });
-    } catch {
-      return budgetLimits;
-    }
-
-    return budgetLimits;
   }
 
   private countUnread(notifications: FinTrackNotification[]): number {

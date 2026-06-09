@@ -4,6 +4,7 @@ import { FormsModule } from '@angular/forms';
 import { RouterLink } from '@angular/router';
 import { ApiService } from '../../api.service';
 import { finalize, timeout } from 'rxjs';
+import { BudgetService } from '../../budget.service';
 
 interface Transaction {
   description: string;
@@ -33,7 +34,7 @@ export class Overview implements OnInit {
   totalIncome: number = 0;
   
   // Budget & Financial Metrics
-  monthlyBudgetLimit: number = 500000; // Adjusted for XAF scale
+  monthlyBudgetLimit: number = 0;
   totalSpent: number = 0;
   
   // Calendar-Aware Variables
@@ -51,6 +52,7 @@ export class Overview implements OnInit {
   constructor(
     @Inject(PLATFORM_ID) private platformId: Object,
     private apiService: ApiService,
+    private budgetService: BudgetService,
     private cdr: ChangeDetectorRef
   ) { }
 
@@ -119,6 +121,8 @@ export class Overview implements OnInit {
   }
 
   private runFinancialEngine(): void {
+    this.monthlyBudgetLimit = this.budgetService.getBudgetConfig().monthlyLimit;
+
     const selectedDate = this.getSelectedMonthDate();
     const currentYear = selectedDate.getFullYear();
     const currentMonth = selectedDate.getMonth();
@@ -265,11 +269,11 @@ export class Overview implements OnInit {
 
   private getLedgerErrorMessage(err: any): string {
     if (err?.name === 'TimeoutError') {
-      return 'The server is taking too long to respond. Try refreshing again.';
+      return 'This is taking longer than expected. Try refreshing again.';
     }
 
     if (err?.status === 0) {
-      return 'Cannot reach the server. Make sure the backend is running on http://localhost:3000.';
+      return 'We cannot connect right now. The server may be down or still starting.';
     }
 
     return err?.error?.message || 'Could not load transactions right now.';

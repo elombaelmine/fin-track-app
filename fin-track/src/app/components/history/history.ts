@@ -218,11 +218,11 @@ export class History implements OnInit {
 
   private getHistoryErrorMessage(err: any): string {
     if (err?.name === 'TimeoutError') {
-      return 'The server is taking too long to respond. Try refreshing again.';
+      return 'This is taking longer than expected. Try refreshing again.';
     }
 
     if (err?.status === 0) {
-      return 'Cannot reach the server. Make sure the backend is running on http://localhost:3000.';
+      return 'We cannot connect right now. The server may be down or still starting.';
     }
 
     return err?.error?.message || 'Could not load transaction history.';
