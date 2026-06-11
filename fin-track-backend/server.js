@@ -30,8 +30,8 @@ function isAllowedOrigin(origin) {
   // 1. Always allow if origin is null
   if (!origin) return true;
 
-  // 2. Allow your Vercel frontend
-  if (origin === 'https://fintrack-frontend-navy.vercel.app') return true;
+  // 2. Allow configured frontend origins
+  if (allowedOrigins.has(origin)) return true;
 
   // 3. Allow the backend URL (to stop the current error)
   if (origin === 'https://fintrackbackend-xtg8.onrender.com') return true;
