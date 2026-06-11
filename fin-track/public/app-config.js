@@ -1,4 +1,3 @@
 window.finTrackConfig = {
-  private baseUrl = 'https://fintrackbackend-xtg8.onrender.com/api'
+  apiBaseUrl: 'https://fintrackbackend-xtg8.onrender.com/api'
 };
- 
